@@ -34,7 +34,7 @@ const Apply = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef();
   const [action, setAction] = useState<"" | "create" | "update">("");
-  const [applyList, setApplyList] = useState<ApplyItem[]>(data as ApplyItem[]);
+  const [applyList] = useState<ApplyItem[]>(data as ApplyItem[]);
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
     undefined
   );
