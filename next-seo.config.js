@@ -4,9 +4,9 @@ const defaultSEOConfig = {
   titleTemplate: "%s | nextarter-chakra",
   defaultTitle: "nextarter-chakra",
   description: "Next.js + chakra-ui + TypeScript template",
-  canonical: "https://nextarter-chakra.sznm.dev",
+  canonical: "https://joboss.netlify.app/",
   openGraph: {
-    url: "https://nextarter-chakra.sznm.dev",
+    url: "https://joboss.netlify.app/",
     title: "nextarter-chakra",
     description: "Next.js + chakra-ui + TypeScript template",
     images: [

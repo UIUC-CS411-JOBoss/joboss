@@ -1,4 +1,4 @@
-import { Box, Flex, Heading } from "@chakra-ui/react";
+import { Box, Flex, Text } from "@chakra-ui/react";
 import Link from "next/link";
 
 import ThemeToggle from "./ThemeToggle";
@@ -6,10 +6,17 @@ import ThemeToggle from "./ThemeToggle";
 const Header = () => {
   return (
     <Flex as="header" width="full" align="center">
-      <Heading as="h1" size="md">
-        <Link href="/">nextarter-chakra</Link>
-      </Heading>
-
+      <Box p={2}>
+        <Text fontWeight="extrabold" fontSize="lg">
+          <Link href="/">Joboss</Link>
+        </Text>
+      </Box>
+      <Box p={2}>
+        <Link href="/job/">Job</Link>
+      </Box>
+      <Box p={2}>
+        <Link href="/apply/">My Apply</Link>
+      </Box>
       <Box marginLeft="auto">
         <ThemeToggle />
       </Box>
