@@ -1,7 +1,7 @@
 import { Box, Button, Code, Flex, Image, Link } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 
-const repoLink = "https://github.com/sozonome/nextarter-chakra";
+const repoLink = "https://github.com/sozonome/joboss";
 
 const CTASection = () => {
   return (
@@ -10,7 +10,7 @@ const CTASection = () => {
         <Link
           aria-label="Deploy to Vercel"
           isExternal
-          href="https://vercel.com/import/git?s=https://github.com/sozonome/nextarter-chakra"
+          href="https://vercel.com/import/git?s=https://github.com/sozonome/joboss"
         >
           <Image src="https://vercel.com/button" alt="Vercel deploy button" />
         </Link>
@@ -18,7 +18,7 @@ const CTASection = () => {
         <Link
           aria-label="Deploy to Netlify"
           isExternal
-          href="https://app.netlify.com/start/deploy?repository=https://github.com/sozonome/nextarter-chakra"
+          href="https://app.netlify.com/start/deploy?repository=https://github.com/sozonome/joboss"
         >
           <Image
             src="https://www.netlify.com/img/deploy/button.svg"
@@ -28,13 +28,13 @@ const CTASection = () => {
       </Flex>
 
       <Box marginY={2}>
-        <Code>npx degit sozonome/nextarter-chakra {"<YOUR_APP_NAME>"}</Code>
+        <Code>npx degit sozonome/joboss {"<YOUR_APP_NAME>"}</Code>
         <br />
 
         <Button
           marginTop={2}
           as="a"
-          href="https://github.com/sozonome/nextarter-chakra/generate"
+          href="https://github.com/sozonome/joboss/generate"
           target="_blank"
           size="sm"
         >
@@ -55,7 +55,7 @@ const CTASection = () => {
         <Link href={repoLink} isExternal>
           <Image
             align="center"
-            src="https://img.shields.io/github/stars/sozonome/nextarter-chakra?style=social"
+            src="https://img.shields.io/github/stars/sozonome/joboss?style=social"
             alt="github stars"
           />
         </Link>
