@@ -7,13 +7,10 @@ import {
   Tr,
   Th,
   Td,
-  Heading,
   Stack,
   FormControl,
   FormLabel,
   Input,
-  useColorModeValue,
-  Divider,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -105,8 +102,8 @@ const Job = ({
                 const res = await fetch(
                   `${BASE_URL}/api/job/list?company=${searchCompany}`
                 );
-                const data = await res.json();
-                if (data !== null) setJobList(data.data);
+                const d = await res.json();
+                if (d !== null) setJobList(d.data);
               }}
             >
               Search
@@ -118,7 +115,7 @@ const Job = ({
   );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const res = await fetch(`${BASE_URL}/api/job/list`);
   const data = await res.json();
 
