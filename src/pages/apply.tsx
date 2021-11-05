@@ -32,7 +32,7 @@ const Apply = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = useRef();
+  const btnRef = useRef(null);
   const [action, setAction] = useState<"" | "create" | "update">("");
   const [applyList] = useState<ApplyItem[]>(data as ApplyItem[]);
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(

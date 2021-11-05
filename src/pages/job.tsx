@@ -30,7 +30,7 @@ const Job = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const btnRef = useRef();
+  const btnRef = useRef(null);
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
   const [searchCompany, setSearchCompany] = useState("");
   return (
