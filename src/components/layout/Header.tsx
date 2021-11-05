@@ -17,6 +17,9 @@ const Header = () => {
       <Box p={2}>
         <Link href="/apply/">My Apply</Link>
       </Box>
+      <Box p={2}>
+        <Link href="/statistics/">Statistics</Link>
+      </Box>
       <Box marginLeft="auto">
         <ThemeToggle />
       </Box>

@@ -24,11 +24,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import React, { useRef, useState } from "react";
 
 import { BASE_URL } from "../../config";
-
-type JobItem = {
-  title: string;
-  company: string;
-};
+import type { JobItem } from "types/job";
 
 const Job = ({
   data,
