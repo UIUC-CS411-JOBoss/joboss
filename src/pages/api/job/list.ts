@@ -6,20 +6,30 @@ import excuteQuery from "../db";
 import type { JobItem } from "types/job";
 
 const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { company } = req.query;
-
   try {
-    const query =
-      "SELECT j.title, c.name AS company FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id ORDER BY company LIMIT 50";
+    const { company } = req.query;
+    const query = company
+      ? `
+      SELECT j.title, c.name AS company 
+      FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
+      WHERE c.name LIKE ?
+      ORDER BY company 
+      LIMIT 50
+    `
+      : `
+      SELECT j.title, c.name AS company 
+      FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
+      ORDER BY company 
+      LIMIT 50
+    `;
+    const values = company ? [`${company}%`] : [];
+
     const result = await excuteQuery({
       query,
-      values: [],
+      values,
     });
 
-    let jobItemList: JobItem[] = JSON.parse(JSON.stringify(result));
-    if (company && typeof company === "string") {
-      jobItemList = jobItemList.filter((x) => x.company.search(company) >= 0);
-    }
+    const jobItemList: JobItem[] = JSON.parse(JSON.stringify(result));
 
     res.statusCode = 200;
     res.json({
