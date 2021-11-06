@@ -1,5 +1,16 @@
 /* eslint-disable react/no-array-index-key */
-import { Box, Heading, UnorderedList, ListItem } from "@chakra-ui/react";
+import {
+  Box,
+  Heading,
+  UnorderedList,
+  ListItem,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 import { BASE_URL } from "../../config";
@@ -12,20 +23,42 @@ const Statistics = ({
       <Heading size="md" py={4}>
         Top Offer in 2020
       </Heading>
-      <UnorderedList>
-        {data.inactiveUIUCStudent.map((x: unknown, i: number) => {
-          return <ListItem key={i}>{JSON.stringify(x)}</ListItem>;
-        })}
-      </UnorderedList>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Company</Th>
+            <Th>Num of offers</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data.topOffer.map((offer: any) => (
+            <Tr key={offer.id}>
+              <Td>{offer.name}</Td>
+              <Td>{offer.num_of_offer}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
 
       <Heading size="md" py={4}>
         Inactive UIUC students
       </Heading>
-      <UnorderedList>
-        {data.topOffer.map((x: unknown, i: number) => {
-          return <ListItem key={i}>{JSON.stringify(x)}</ListItem>;
-        })}
-      </UnorderedList>
+      <Table variant="simple">
+        <Thead>
+          <Tr>
+            <Th>Name</Th>
+            <Th>Contact</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {data.inactiveUIUCStudent.map((user: any) => (
+            <Tr key={user.id}>
+              <Td>{user.id}</Td>
+              <Td>{user.email}</Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
     </Box>
   );
 };
