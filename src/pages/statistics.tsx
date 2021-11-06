@@ -2,8 +2,6 @@
 import {
   Box,
   Heading,
-  UnorderedList,
-  ListItem,
   Table,
   Thead,
   Tbody,
@@ -14,6 +12,7 @@ import {
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 
 import { BASE_URL } from "../../config";
+import type { UserItem } from "types/user";
 
 const Statistics = ({
   data,
@@ -31,12 +30,15 @@ const Statistics = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.topOffer.map((offer: any) => (
-            <Tr key={offer.id}>
-              <Td>{offer.name}</Td>
-              <Td>{offer.num_of_offer}</Td>
-            </Tr>
-          ))}
+          {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data.topOffer.map((offer: any) => (
+              <Tr key={offer.id}>
+                <Td>{offer.name}</Td>
+                <Td>{offer.num_of_offer}</Td>
+              </Tr>
+            ))
+          }
         </Tbody>
       </Table>
 
@@ -51,7 +53,7 @@ const Statistics = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.inactiveUIUCStudent.map((user: any) => (
+          {data.inactiveUIUCStudent.map((user: UserItem) => (
             <Tr key={user.id}>
               <Td>{user.id}</Td>
               <Td>{user.email}</Td>

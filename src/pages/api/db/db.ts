@@ -1,6 +1,7 @@
+import dotenv from "dotenv";
 import mysql from "serverless-mysql";
 
-require('dotenv').config();
+dotenv.config();
 
 const db = mysql({
   config: {
@@ -8,14 +9,14 @@ const db = mysql({
     port: Number(process.env.MYSQL_PORT),
     database: process.env.MYSQL_DATABASE,
     user: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD
+    password: process.env.MYSQL_PASSWORD,
   },
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const excuteQuery = async (query: string, values: any) => {
   try {
-    const results = await db.query(query, values);
-    return results;
+    return await db.query(query, values);
   } catch (error) {
     return { error };
   }

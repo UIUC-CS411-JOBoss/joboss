@@ -1,8 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
+
 import executeQuery from "../db/db";
 
-const inactiveUIUCStudent = async (req: NextApiRequest, res: NextApiResponse) => {
-  res.statusCode = 200;
+const inactiveUIUCStudent = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
   const query = `
   SELECT u.id, u.email
   FROM USER u LEFT JOIN JOB_STATUS js ON u.id = js.user_id JOIN JOB j ON j.id = js.job_id \
@@ -11,10 +14,18 @@ const inactiveUIUCStudent = async (req: NextApiRequest, res: NextApiResponse) =>
   HAVING COUNT(*) < 5 \
   ORDER BY u.email ASC LIMIT 15;
   `;
-  const records:any = await executeQuery(query, null);
-  res.json({
-    data: records,
-  });
+  try {
+    const records: unknown = await executeQuery(query, null);
+    res.statusCode = 200;
+    res.json({
+      data: records,
+    });
+  } catch (error) {
+    res.statusCode = 500;
+    res.json({
+      message: error,
+    });
+  }
 };
 
 export default inactiveUIUCStudent;
