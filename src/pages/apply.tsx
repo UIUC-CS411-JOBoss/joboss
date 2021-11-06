@@ -45,6 +45,7 @@ const Apply = ({
     setAction("create");
     setCurrentApply({
       jobId: 1,
+      userId: 1,
       title: "",
       company: "",
       date: getDateString(),
@@ -156,9 +157,16 @@ const Apply = ({
                       })
                     }
                   >
-                    <option value="apply">Apply</option>
-                    <option value="oa">OA</option>
-                    <option value="offer">Offer</option>
+                    <option value="applied">Apply</option>
+                    <option value="OA">OA</option>
+                    <option value="behavior interview">
+                      behavior interview
+                    </option>
+                    <option value="technical interview">
+                      technical interview
+                    </option>
+                    <option value="rejected">rejected</option>
+                    <option value="offered">offered</option>
                   </Select>
                 </FormControl>
                 <FormControl id="date">
