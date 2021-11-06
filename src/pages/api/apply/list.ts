@@ -2,35 +2,30 @@
 
 import { NextApiRequest, NextApiResponse } from "next";
 
+import excuteQuery from "../db";
 import type { ApplyItem } from "types/apply";
 
-const applyList = (req: NextApiRequest, res: NextApiResponse) => {
-  const applyItemList: ApplyItem[] = [
-    {
-      id: 1,
-      jobId: 100,
-      title: "SWE",
-      company: "Google",
-      date: "2021/09/20",
-      status: "OA",
-      updateAt: "2021/09/25",
-      createAt: "2021/09/25",
-    },
-    {
-      id: 2,
-      jobId: 100,
-      title: "SWE",
-      company: "Google",
-      date: "2021/09/20",
-      status: "OFFER",
-      updateAt: "2021/10/1",
-      createAt: "2021/10/1",
-    },
-  ];
-  res.statusCode = 200;
-  res.json({
-    data: applyItemList,
-  });
+const applyList = async (req: NextApiRequest, res: NextApiResponse) => {
+  try {
+    const query =
+      "SELECT s.id, s.user_id AS userId, s.job_id AS jobId, j.title, c.name AS company, s.status_date AS date, s.application_status AS status, s.create_at AS createAt, s.update_at AS updateAt FROM JOB_STATUS AS s JOIN JOB AS j ON s.job_id = j.id JOIN COMPANY AS c ON j.company_id = c.id WHERE s.user_id = 1";
+    const result = await excuteQuery({
+      query,
+      values: [],
+    });
+
+    const applyItemList: ApplyItem[] = JSON.parse(JSON.stringify(result));
+
+    res.statusCode = 200;
+    res.json({
+      data: applyItemList,
+    });
+  } catch (error) {
+    res.statusCode = 500;
+    res.json({
+      msg: error,
+    });
+  }
 };
 
 export default applyList;
