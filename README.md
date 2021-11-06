@@ -60,3 +60,4 @@ You can start editing the page by modifying `src/pages/index.js`. The page auto-
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 - [Chakra UI](https://chakra-ui.com)
 - [TypeScript](https://www.typescriptlang.org)
+- [How to use MySQL database in Next.js apps](https://www.simplenextjs.com/posts/next-mysql?fbclid=IwAR2gkNqZb_yQOdkyT3HgpqNiBOgWXJvVn2V8ImfVTZvORcqIYYjcoGcvZTg)
