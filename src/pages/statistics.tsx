@@ -8,8 +8,14 @@ import {
   Tr,
   Th,
   Td,
+  FormControl,
+  Flex,
+  Spacer,
+  Input,
+  Button,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import React, { useState } from "react";
 
 import { BASE_URL } from "../../config";
 import type { UserItem } from "types/user";
@@ -17,6 +23,19 @@ import type { UserItem } from "types/user";
 const Statistics = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const [userList, setUserList] = useState<UserItem[]>(
+    data.inactiveUIUCStudent as UserItem[]
+  );
+  const [duration, setDuration] = useState("7");
+
+  const searchInactiveUsers = async () => {
+    const res = await fetch(
+      `${BASE_URL}/api/statistics/inactiveUIUCStudent/?duration=${duration}`
+    );
+    const users = (await res.json()).data;
+    setUserList(users);
+  };
+
   return (
     <Box mb={8} w="full">
       <Heading size="md" py={4}>
@@ -45,6 +64,25 @@ const Statistics = ({
       <Heading size="md" py={4}>
         Inactive UIUC students
       </Heading>
+      <FormControl id="user">
+        <Flex>
+          <Box>
+            <Input
+              width="7rem"
+              placeholder="7"
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+            />
+          </Box>
+          <Box p="2">Duration (days)</Box>
+          <Spacer />
+          <Box>
+            <Button colorScheme="blue" onClick={searchInactiveUsers}>
+              Search
+            </Button>
+          </Box>
+        </Flex>
+      </FormControl>
       <Table variant="simple">
         <Thead>
           <Tr>
@@ -53,7 +91,7 @@ const Statistics = ({
           </Tr>
         </Thead>
         <Tbody>
-          {data.inactiveUIUCStudent.map((user: UserItem) => (
+          {userList.map((user: UserItem) => (
             <Tr key={user.id}>
               <Td>{user.id}</Td>
               <Td>{user.email}</Td>
