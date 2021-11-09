@@ -22,7 +22,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { BASE_URL } from "../../config";
 import type { ApplyItem } from "types/apply";
@@ -34,12 +34,28 @@ const Apply = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [action, setAction] = useState<"" | "create" | "update">("");
-  const [applyList] = useState<ApplyItem[]>(data as ApplyItem[]);
+  const [applyList, setApplyList] = useState<ApplyItem[]>(data as ApplyItem[]);
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
     undefined
   );
+  const [currPage, setCurrPage] = useState(0);
   const isUpdate = action === "update";
   const isCreate = action === "create";
+
+  const changePage = (val: number) => {
+    setCurrPage((prevPage: number) =>
+      prevPage + val < 0 ? 0 : prevPage + val
+    );
+  };
+
+  useEffect(() => {
+    const fetchApplyList = async () => {
+      const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`);
+      const jobs = (await res.json()).data;
+      setApplyList(jobs);
+    };
+    fetchApplyList();
+  }, [currPage]);
 
   const goCreate = () => {
     setAction("create");
@@ -101,8 +117,12 @@ const Apply = ({
           </Tbody>
         </Table>
         <Stack spacing={4} direction="row" align="center" py={4}>
-          <Button colorScheme="teal">Prev</Button>
-          <Button colorScheme="teal">Next</Button>
+          <Button colorScheme="teal" onClick={() => changePage(-1)}>
+            Prev
+          </Button>
+          <Button colorScheme="teal" onClick={() => changePage(1)}>
+            Next
+          </Button>
           <Button ref={btnRef} colorScheme="blue" onClick={goCreate}>
             Create
           </Button>
@@ -235,7 +255,7 @@ const Apply = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${BASE_URL}/api/apply/list`);
+  const res = await fetch(`${BASE_URL}/api/apply/list?page=0`);
   const data = await res.json();
 
   if (data === null) {
