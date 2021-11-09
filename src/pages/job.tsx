@@ -21,7 +21,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 import { BASE_URL } from "../../config";
 import type { JobItem } from "types/job";
@@ -33,6 +33,26 @@ const Job = ({
   const btnRef = useRef(null);
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
   const [searchCompany, setSearchCompany] = useState("");
+  const [currPage, setCurrPage] = useState(0);
+
+  const changePage = (val: number) => {
+    setCurrPage((prevPage: number) =>
+      prevPage + val < 0 ? 0 : prevPage + val
+    );
+  };
+
+  useEffect(() => {
+    const fetchJobList = async () => {
+      const url = searchCompany
+        ? `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
+        : `${BASE_URL}/api/job/list?page=${currPage}`;
+      const res = await fetch(url);
+      const jobs = (await res.json()).data;
+      setJobList(jobs);
+    };
+    fetchJobList();
+  }, [currPage, searchCompany]);
+
   return (
     <>
       <Box mb={8} w="full">
@@ -60,8 +80,12 @@ const Job = ({
           </Tbody>
         </Table>
         <Stack spacing={4} direction="row" align="center" py={4}>
-          <Button colorScheme="teal">Prev</Button>
-          <Button colorScheme="teal">Next</Button>
+          <Button colorScheme="teal" onClick={() => changePage(-1)}>
+            Prev
+          </Button>
+          <Button colorScheme="teal" onClick={() => changePage(1)}>
+            Next
+          </Button>
           <Button ref={btnRef} colorScheme="blue" onClick={onOpen}>
             Search
           </Button>
@@ -96,7 +120,7 @@ const Job = ({
               colorScheme="blue"
               onClick={async () => {
                 const res = await fetch(
-                  `${BASE_URL}/api/job/list?company=${searchCompany}`
+                  `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
                 );
                 const d = await res.json();
                 if (d !== null) setJobList(d.data);
@@ -112,7 +136,7 @@ const Job = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${BASE_URL}/api/job/list`);
+  const res = await fetch(`${BASE_URL}/api/job/list?page=0`);
   const data = await res.json();
 
   if (data === null) {

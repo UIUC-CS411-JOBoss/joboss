@@ -7,22 +7,27 @@ import type { JobItem } from "types/job";
 
 const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
-    const { company } = req.query;
+    const pageSize = 20;
+    const { company, page } = req.query;
     const query = company
       ? `
       SELECT j.title, c.name AS company 
       FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
       WHERE c.name LIKE ?
       ORDER BY company 
-      LIMIT 50
+      LIMIT ?
+      OFFSET ?
     `
       : `
       SELECT j.title, c.name AS company 
       FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
       ORDER BY company 
-      LIMIT 50
+      LIMIT ?
+      OFFSET ?;
     `;
-    const values = company ? [`${company}%`] : [];
+    const values = company
+      ? [`${company}%`, pageSize, pageSize * Number(page)]
+      : [pageSize, pageSize * Number(page)];
 
     const result = await excuteQuery({
       query,
