@@ -22,7 +22,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
 import type { ApplyItem } from "types/apply";
@@ -48,15 +48,15 @@ const Apply = ({
     );
   };
 
-  const fetchApplyList = async () => {
+  const fetchApplyList = useCallback(async () => {
     const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`);
     const jobs = (await res.json()).data;
     setApplyList(jobs);
-  };
+  }, [currPage]);
 
   useEffect(() => {
     fetchApplyList();
-  }, [currPage]);
+  }, [currPage, fetchApplyList]);
 
   const goCreate = () => {
     setAction("create");
