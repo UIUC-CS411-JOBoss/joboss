@@ -11,13 +11,11 @@ const applyCreate = async (req: NextApiRequest, res: NextApiResponse) => {
   const newApply = req.body as ApplyItem;
   try {
     const query =
-      "INSERT INTO JOB_STATUS (job_id, user_id, status_date, create_at, update_at, application_status) VALUES (?, ?, ?, ?, ?, ?)";
+      "INSERT INTO JOB_STATUS (job_id, user_id, status_date, application_status) VALUES (?, ?, ?, ?)";
     const values = [
       newApply.jobId,
       newApply.userId,
-      new Date(),
-      new Date(),
-      new Date(),
+      newApply.date,
       newApply.status,
     ];
 

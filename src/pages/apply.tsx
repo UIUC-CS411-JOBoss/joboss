@@ -48,12 +48,13 @@ const Apply = ({
     );
   };
 
+  const fetchApplyList = async () => {
+    const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`);
+    const jobs = (await res.json()).data;
+    setApplyList(jobs);
+  };
+
   useEffect(() => {
-    const fetchApplyList = async () => {
-      const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`);
-      const jobs = (await res.json()).data;
-      setApplyList(jobs);
-    };
     fetchApplyList();
   }, [currPage]);
 
@@ -221,6 +222,7 @@ const Apply = ({
                 colorScheme="red"
                 onClick={async () => {
                   await postData("delete");
+                  await fetchApplyList();
                   onClose();
                 }}
               >
@@ -231,6 +233,7 @@ const Apply = ({
                   colorScheme="blue"
                   onClick={async () => {
                     await postData("update");
+                    await fetchApplyList();
                   }}
                 >
                   Update
@@ -240,6 +243,7 @@ const Apply = ({
                   colorScheme="blue"
                   onClick={async () => {
                     await postData("create");
+                    await fetchApplyList();
                     onClose();
                   }}
                 >
