@@ -3,6 +3,8 @@ import mysql from "serverless-mysql";
 
 dotenv.config();
 
+/* Marouane Reda. (2021, Aug 12). How to use MySQL database in Next.js apps. SimpleNextjs. https://www.simplenextjs.com/posts/next-mysql. */
+
 const db = mysql({
   config: {
     host: process.env.MYSQL_HOST,
