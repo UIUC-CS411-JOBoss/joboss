@@ -19,12 +19,15 @@ import {
   DrawerContent,
   DrawerCloseButton,
   useDisclosure,
+  Select,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import React, { useRef, useState, useEffect } from "react";
 
 import { BASE_URL } from "../../config";
+import type { ApplyItem } from "types/apply";
 import type { JobItem } from "types/job";
+import { getDateString } from "utils/date";
 
 const Job = ({
   data,
@@ -34,11 +37,45 @@ const Job = ({
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
   const [searchCompany, setSearchCompany] = useState("");
   const [currPage, setCurrPage] = useState(0);
+  const [action, setAction] = useState<"" | "create" | "search">("");
+  const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
+    undefined
+  );
+  const isCreate = action === "create";
+  const isSearech = action === "search";
 
   const changePage = (val: number) => {
     setCurrPage((prevPage: number) =>
       prevPage + val < 0 ? 0 : prevPage + val
     );
+  };
+
+  const goCreate = (jobId: number) => {
+    setAction("create");
+    setCurrentApply({
+      jobId,
+      userId: 1,
+      title: "",
+      company: "",
+      date: getDateString(),
+      status: "apply",
+    });
+    onOpen();
+  };
+
+  const goSearch = () => {
+    setAction("search");
+    onOpen();
+  };
+
+  const postData = async (act: "create") => {
+    return fetch(`${BASE_URL}/api/apply/${act}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(currentApply),
+    });
   };
 
   useEffect(() => {
@@ -72,7 +109,13 @@ const Job = ({
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
                     <Button>Detail</Button>
-                    <Button>I Have Applied</Button>
+                    <Button
+                      ref={btnRef}
+                      colorScheme="blue"
+                      onClick={() => goCreate(job.id)}
+                    >
+                      Create
+                    </Button>
                   </Stack>
                 </Td>
               </Tr>
@@ -86,7 +129,7 @@ const Job = ({
           <Button colorScheme="teal" onClick={() => changePage(1)}>
             Next
           </Button>
-          <Button ref={btnRef} colorScheme="blue" onClick={onOpen}>
+          <Button ref={btnRef} colorScheme="blue" onClick={goSearch}>
             Search
           </Button>
         </Stack>
@@ -100,10 +143,55 @@ const Job = ({
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Search</DrawerHeader>
+          <DrawerHeader>
+            {isCreate ? "Create Application" : "Search Job"}
+          </DrawerHeader>
           <DrawerBody>
             <Stack spacing={4}>
-              <FormControl id="company">
+              {currentApply ? (
+                <div>
+                  <FormControl id="status" hidden={isSearech}>
+                    <FormLabel>Status</FormLabel>
+                    <Select
+                      placeholder="Select option"
+                      value={currentApply?.status}
+                      onChange={(e) =>
+                        setCurrentApply({
+                          ...currentApply,
+                          status: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="applied">Apply</option>
+                      <option value="OA">OA</option>
+                      <option value="behavior interview">
+                        behavior interview
+                      </option>
+                      <option value="technical interview">
+                        technical interview
+                      </option>
+                      <option value="rejected">rejected</option>
+                      <option value="offered">offered</option>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl id="date" hidden={isSearech}>
+                    <FormLabel>Date</FormLabel>
+                    <Input
+                      value={currentApply?.date}
+                      onChange={(e) =>
+                        setCurrentApply({
+                          ...currentApply,
+                          date: e.target.value,
+                        })
+                      }
+                    />
+                  </FormControl>
+                </div>
+              ) : (
+                "no data"
+              )}
+              <FormControl id="company" hidden={isCreate}>
                 <FormLabel>Company Name</FormLabel>
                 <Input
                   value={searchCompany}
@@ -119,14 +207,19 @@ const Job = ({
             <Button
               colorScheme="blue"
               onClick={async () => {
-                const res = await fetch(
-                  `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
-                );
-                const d = await res.json();
-                if (d !== null) setJobList(d.data);
+                if (isCreate) {
+                  await postData("create");
+                }
+                if (isSearech) {
+                  const res = await fetch(
+                    `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
+                  );
+                  const d = await res.json();
+                  if (d !== null) setJobList(d.data);
+                }
               }}
             >
-              Search
+              {isCreate ? "Create" : "Search"}
             </Button>
           </DrawerFooter>
         </DrawerContent>

@@ -26,7 +26,6 @@ import React, { useRef, useState, useEffect, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
 import type { ApplyItem } from "types/apply";
-import { getDateString } from "utils/date";
 
 const Apply = ({
   data,
@@ -40,7 +39,6 @@ const Apply = ({
   );
   const [currPage, setCurrPage] = useState(0);
   const isUpdate = action === "update";
-  const isCreate = action === "create";
 
   const changePage = (val: number) => {
     setCurrPage((prevPage: number) =>
@@ -58,25 +56,13 @@ const Apply = ({
     fetchApplyList();
   }, [currPage, fetchApplyList]);
 
-  const goCreate = () => {
-    setAction("create");
-    setCurrentApply({
-      jobId: 1,
-      userId: 1,
-      title: "",
-      company: "",
-      date: getDateString(),
-      status: "apply",
-    });
-    onOpen();
-  };
   const goUpdate = (applyData: ApplyItem) => {
     setAction("update");
     setCurrentApply(applyData);
     onOpen();
   };
 
-  const postData = async (act: "create" | "update" | "delete") => {
+  const postData = async (act: "update" | "delete") => {
     return fetch(`${BASE_URL}/api/apply/${act}`, {
       method: "POST",
       headers: {
@@ -124,9 +110,6 @@ const Apply = ({
           <Button colorScheme="teal" onClick={() => changePage(1)}>
             Next
           </Button>
-          <Button ref={btnRef} colorScheme="blue" onClick={goCreate}>
-            Create
-          </Button>
         </Stack>
       </Box>
       <Drawer
@@ -139,9 +122,7 @@ const Apply = ({
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>
-            {isCreate ? "Create Apply" : `Update Apply - ${currentApply?.id}`}{" "}
-          </DrawerHeader>
+          <DrawerHeader>Update Apply - {currentApply?.id}</DrawerHeader>
           <DrawerBody>
             {currentApply ? (
               <Stack spacing={4}>
@@ -158,11 +139,11 @@ const Apply = ({
                     value={currentApply?.jobId}
                   />
                 </FormControl>
-                <FormControl id="title" hidden={isCreate}>
+                <FormControl id="title">
                   <FormLabel>Title</FormLabel>
                   <Input disabled={isUpdate} value={currentApply?.title} />
                 </FormControl>
-                <FormControl id="company" hidden={isCreate}>
+                <FormControl id="company">
                   <FormLabel>Company Name</FormLabel>
                   <Input disabled={isUpdate} value={currentApply?.company} />
                 </FormControl>
@@ -199,11 +180,11 @@ const Apply = ({
                     }
                   />
                 </FormControl>
-                <FormControl id="createAt" hidden={isCreate}>
+                <FormControl id="createAt">
                   <FormLabel>Create At</FormLabel>
                   <Input disabled value={currentApply?.createAt} />
                 </FormControl>
-                <FormControl id="updateAt" hidden={isCreate}>
+                <FormControl id="updateAt">
                   <FormLabel>Update At</FormLabel>
                   <Input disabled value={currentApply?.updateAt} />
                 </FormControl>
@@ -218,7 +199,6 @@ const Apply = ({
                 Cancel
               </Button>
               <Button
-                hidden={isCreate}
                 colorScheme="red"
                 onClick={async () => {
                   await postData("delete");
@@ -228,28 +208,15 @@ const Apply = ({
               >
                 Delete
               </Button>
-              {isUpdate ? (
-                <Button
-                  colorScheme="blue"
-                  onClick={async () => {
-                    await postData("update");
-                    await fetchApplyList();
-                  }}
-                >
-                  Update
-                </Button>
-              ) : (
-                <Button
-                  colorScheme="blue"
-                  onClick={async () => {
-                    await postData("create");
-                    await fetchApplyList();
-                    onClose();
-                  }}
-                >
-                  Create
-                </Button>
-              )}
+              <Button
+                colorScheme="blue"
+                onClick={async () => {
+                  await postData("update");
+                  await fetchApplyList();
+                }}
+              >
+                Update
+              </Button>
             </Stack>
           </DrawerFooter>
         </DrawerContent>
