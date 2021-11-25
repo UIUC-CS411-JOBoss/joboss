@@ -11,7 +11,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
     const { company, page } = req.query;
     const query = company
       ? `
-      SELECT j.id, j.title, c.name AS company 
+      SELECT j.id, j.title, c.name AS company, j.location_states, j.text_description, j.apply_start, j.expiration_date
       FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
       WHERE c.name LIKE ?
       ORDER BY company 
@@ -19,7 +19,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
       OFFSET ?
     `
       : `
-      SELECT j.id, j.title, c.name AS company 
+      SELECT j.id, j.title, c.name AS company, j.location_states, j.text_description, j.apply_start, j.expiration_date
       FROM JOB AS j JOIN COMPANY AS c ON j.company_id = c.id 
       ORDER BY company 
       LIMIT ?

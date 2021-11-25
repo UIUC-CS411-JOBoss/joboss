@@ -122,7 +122,7 @@ const Apply = ({
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>Update Apply - {currentApply?.id}</DrawerHeader>
+          <DrawerHeader>Update Application</DrawerHeader>
           <DrawerBody>
             {currentApply ? (
               <Stack spacing={4}>

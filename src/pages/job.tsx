@@ -11,6 +11,7 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Textarea,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -35,14 +36,16 @@ const Job = ({
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
+  const [currentJob, setCurrentJob] = useState<JobItem | undefined>(undefined);
   const [searchCompany, setSearchCompany] = useState("");
   const [currPage, setCurrPage] = useState(0);
-  const [action, setAction] = useState<"" | "create" | "search">("");
+  const [action, setAction] = useState<"" | "create" | "search" | "detail">("");
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
     undefined
   );
   const isCreate = action === "create";
-  const isSearech = action === "search";
+  const isSearch = action === "search";
+  const isDetail = action === "detail";
 
   const changePage = (val: number) => {
     setCurrPage((prevPage: number) =>
@@ -68,6 +71,12 @@ const Job = ({
     onOpen();
   };
 
+  const goDetail = (job: JobItem) => {
+    setAction("detail");
+    setCurrentJob(job);
+    onOpen();
+  };
+
   const postData = async (act: "create") => {
     return fetch(`${BASE_URL}/api/apply/${act}`, {
       method: "POST",
@@ -90,6 +99,118 @@ const Job = ({
     fetchJobList();
   }, [currPage, searchCompany]);
 
+  const drawerHeaderBody = () => {
+    if (isCreate && currentApply) {
+      return (
+        <>
+          <DrawerHeader>Create Application</DrawerHeader>
+          <DrawerBody>
+            <Stack spacing={4}>
+              <FormControl id="status" hidden={isSearch}>
+                <FormLabel>Status</FormLabel>
+                <Select
+                  placeholder="Select option"
+                  value={currentApply?.status}
+                  onChange={(e) =>
+                    setCurrentApply({
+                      ...currentApply,
+                      status: e.target.value,
+                    })
+                  }
+                >
+                  <option value="applied">Apply</option>
+                  <option value="OA">OA</option>
+                  <option value="behavior interview">behavior interview</option>
+                  <option value="technical interview">
+                    technical interview
+                  </option>
+                  <option value="rejected">rejected</option>
+                  <option value="offered">offered</option>
+                </Select>
+              </FormControl>
+
+              <FormControl id="date" hidden={isSearch}>
+                <FormLabel>Date</FormLabel>
+                <Input
+                  value={currentApply?.date}
+                  onChange={(e) =>
+                    setCurrentApply({
+                      ...currentApply,
+                      date: e.target.value,
+                    })
+                  }
+                />
+              </FormControl>
+            </Stack>
+          </DrawerBody>
+        </>
+      );
+    }
+
+    if (isSearch) {
+      return (
+        <>
+          <DrawerHeader>Search Job</DrawerHeader>
+          <DrawerBody>
+            <Stack>
+              <FormControl id="company" hidden={isCreate}>
+                <FormLabel>Company Name</FormLabel>
+                <Input
+                  value={searchCompany}
+                  onChange={(e) => setSearchCompany(e.target.value)}
+                />
+              </FormControl>
+            </Stack>
+          </DrawerBody>
+        </>
+      );
+    }
+    if (isDetail) {
+      return (
+        <>
+          <DrawerHeader>Job Detail</DrawerHeader>
+          <DrawerBody>
+            <Stack spacing={4}>
+              <FormControl id="job id">
+                <FormLabel>Job Id</FormLabel>
+                <Input disabled value={currentJob?.id} />
+              </FormControl>
+              <FormControl id="title">
+                <FormLabel>Title</FormLabel>
+                <Input disabled value={currentJob?.title} />
+              </FormControl>
+              <FormControl id="company">
+                <FormLabel>Company Name</FormLabel>
+                <Input disabled value={currentJob?.company} />
+              </FormControl>
+              <FormControl id="locationStates">
+                <FormLabel>Location States</FormLabel>
+                <Input disabled value={currentJob?.location_states} />
+              </FormControl>
+              <FormControl id="textDescription">
+                <FormLabel>Description</FormLabel>
+                <Textarea
+                  rows={15}
+                  disabled
+                  value={currentJob?.text_description}
+                />
+              </FormControl>
+              <FormControl id="applyStart">
+                <FormLabel>Application Start Date</FormLabel>
+                <Input disabled value={currentJob?.apply_start} />
+              </FormControl>
+              <FormControl id="expirationDate">
+                <FormLabel>Application Expiration Date</FormLabel>
+                <Input disabled value={currentJob?.expiration_date} />
+              </FormControl>
+            </Stack>
+          </DrawerBody>
+        </>
+      );
+    }
+    return null;
+  };
+
   return (
     <>
       <Box mb={8} w="full">
@@ -103,12 +224,14 @@ const Job = ({
           </Thead>
           <Tbody>
             {jobList.map((job) => (
-              <Tr>
+              <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
-                    <Button>Detail</Button>
+                    <Button ref={btnRef} onClick={() => goDetail(job)}>
+                      Detail
+                    </Button>
                     <Button
                       ref={btnRef}
                       colorScheme="blue"
@@ -139,68 +262,13 @@ const Job = ({
         placement="right"
         onClose={onClose}
         finalFocusRef={btnRef}
+        size="sm"
       >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
-          <DrawerHeader>
-            {isCreate ? "Create Application" : "Search Job"}
-          </DrawerHeader>
-          <DrawerBody>
-            <Stack spacing={4}>
-              {currentApply ? (
-                <div>
-                  <FormControl id="status" hidden={isSearech}>
-                    <FormLabel>Status</FormLabel>
-                    <Select
-                      placeholder="Select option"
-                      value={currentApply?.status}
-                      onChange={(e) =>
-                        setCurrentApply({
-                          ...currentApply,
-                          status: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="applied">Apply</option>
-                      <option value="OA">OA</option>
-                      <option value="behavior interview">
-                        behavior interview
-                      </option>
-                      <option value="technical interview">
-                        technical interview
-                      </option>
-                      <option value="rejected">rejected</option>
-                      <option value="offered">offered</option>
-                    </Select>
-                  </FormControl>
-
-                  <FormControl id="date" hidden={isSearech}>
-                    <FormLabel>Date</FormLabel>
-                    <Input
-                      value={currentApply?.date}
-                      onChange={(e) =>
-                        setCurrentApply({
-                          ...currentApply,
-                          date: e.target.value,
-                        })
-                      }
-                    />
-                  </FormControl>
-                </div>
-              ) : (
-                "no data"
-              )}
-              <FormControl id="company" hidden={isCreate}>
-                <FormLabel>Company Name</FormLabel>
-                <Input
-                  value={searchCompany}
-                  onChange={(e) => setSearchCompany(e.target.value)}
-                />
-              </FormControl>
-            </Stack>
-          </DrawerBody>
-          <DrawerFooter>
+          {drawerHeaderBody()}
+          <DrawerFooter hidden={isDetail}>
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
             </Button>
@@ -210,7 +278,7 @@ const Job = ({
                 if (isCreate) {
                   await postData("create");
                 }
-                if (isSearech) {
+                if (isSearch) {
                   const res = await fetch(
                     `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
                   );
