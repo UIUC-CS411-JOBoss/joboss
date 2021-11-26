@@ -6,12 +6,13 @@ import {
   Button,
   Tr,
   Th,
+  Tag,
   Td,
   Stack,
+  HStack,
   FormControl,
   FormLabel,
   Input,
-  Textarea,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -21,6 +22,8 @@ import {
   DrawerCloseButton,
   useDisclosure,
   Select,
+  Heading,
+  Text,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import React, { useRef, useState, useEffect } from "react";
@@ -166,43 +169,120 @@ const Job = ({
       );
     }
     if (isDetail) {
+      const arrayTagMapping = (s: string | undefined) => {
+        if (s) {
+          const states: string[] = s.split(";");
+          const uniqueStates = states.filter((item, pos) => {
+            return states.indexOf(item) === pos;
+          });
+          return uniqueStates.map((state: string) => {
+            return <Tag>{state}</Tag>;
+          });
+        }
+        return <Tag>N/A</Tag>;
+      };
       return (
         <>
-          <DrawerHeader>Job Detail</DrawerHeader>
+          <DrawerHeader>Job Detail - {currentJob?.id}</DrawerHeader>
           <DrawerBody>
-            <Stack spacing={4}>
-              <FormControl id="job id">
-                <FormLabel>Job Id</FormLabel>
-                <Input disabled value={currentJob?.id} />
-              </FormControl>
-              <FormControl id="title">
-                <FormLabel>Title</FormLabel>
-                <Input disabled value={currentJob?.title} />
-              </FormControl>
-              <FormControl id="company">
-                <FormLabel>Company Name</FormLabel>
-                <Input disabled value={currentJob?.company} />
-              </FormControl>
-              <FormControl id="locationStates">
-                <FormLabel>Location States</FormLabel>
-                <Input disabled value={currentJob?.location_states} />
-              </FormControl>
-              <FormControl id="textDescription">
-                <FormLabel>Description</FormLabel>
-                <Textarea
-                  rows={15}
-                  disabled
-                  value={currentJob?.text_description}
-                />
-              </FormControl>
-              <FormControl id="applyStart">
-                <FormLabel>Application Start Date</FormLabel>
-                <Input disabled value={currentJob?.apply_start} />
-              </FormControl>
-              <FormControl id="expirationDate">
-                <FormLabel>Application Expiration Date</FormLabel>
-                <Input disabled value={currentJob?.expiration_date} />
-              </FormControl>
+            <Stack spacing={5}>
+              <Heading as="h3" size="lg">
+                {currentJob?.title}
+              </Heading>
+              <Heading as="h4" size="md">
+                Company Name
+              </Heading>
+              <Text fontSize="md">{currentJob?.company}</Text>
+              <HStack spacing={10}>
+                <Stack spacing={3}>
+                  <Heading as="h4" size="md">
+                    Application start date
+                  </Heading>
+                  <Text fontSize="md">
+                    {currentJob?.apply_start.slice(0, 10)}
+                  </Text>
+                </Stack>
+                <Stack spacing={3}>
+                  <Heading as="h4" size="md">
+                    Application deadline
+                  </Heading>
+                  <Text fontSize="md">
+                    {currentJob?.expiration_date.slice(0, 10)}{" "}
+                  </Text>
+                </Stack>
+              </HStack>
+              <HStack spacing={10}>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Country
+                  </Heading>
+                  <HStack spacing={2}>
+                    {arrayTagMapping(currentJob?.location_countries)}
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    State
+                  </Heading>
+                  <HStack spacing={2}>
+                    {arrayTagMapping(currentJob?.location_states)}
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Cities
+                  </Heading>
+                  <HStack spacing={2}>
+                    {arrayTagMapping(currentJob?.location_cities)}
+                  </HStack>
+                </Stack>
+              </HStack>
+              <HStack spacing={10}>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Paid Type
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.salary_type_name}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Remote work
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.remote === 1 ? "Allowed" : "N/A"}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Accept CPT/OPT
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>
+                      {currentJob?.accepts_opt_cpt_candidates === 1
+                        ? "Yes"
+                        : "N/A"}
+                    </Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Will Sponsor Visa
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>
+                      {currentJob?.willing_to_sponsor_candidate === 1
+                        ? "Yes"
+                        : "N/A"}
+                    </Tag>
+                  </HStack>
+                </Stack>
+              </HStack>
+              <Heading as="h4" size="md">
+                Role description
+              </Heading>
+              <Text fontSize="md">{currentJob?.text_description} </Text>
             </Stack>
           </DrawerBody>
         </>
@@ -237,7 +317,7 @@ const Job = ({
                       colorScheme="blue"
                       onClick={() => goCreate(job.id)}
                     >
-                      Create
+                      Create Status
                     </Button>
                   </Stack>
                 </Td>
@@ -262,13 +342,13 @@ const Job = ({
         placement="right"
         onClose={onClose}
         finalFocusRef={btnRef}
-        size="sm"
+        size={isDetail ? "full" : "sm"}
       >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
           {drawerHeaderBody()}
-          <DrawerFooter hidden={isDetail}>
+          <DrawerFooter>
             <Button variant="outline" mr={3} onClick={onClose}>
               Cancel
             </Button>
@@ -277,6 +357,9 @@ const Job = ({
               onClick={async () => {
                 if (isCreate) {
                   await postData("create");
+                }
+                if (isDetail && currentJob) {
+                  goCreate(currentJob.id);
                 }
                 if (isSearch) {
                   const res = await fetch(
@@ -287,7 +370,7 @@ const Job = ({
                 }
               }}
             >
-              {isCreate ? "Create" : "Search"}
+              {isSearch ? "Search" : "Create Status"}
             </Button>
           </DrawerFooter>
         </DrawerContent>
