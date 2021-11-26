@@ -13,4 +13,10 @@ export type JobItem = {
   accepts_opt_cpt_candidates: number;
   willing_to_sponsor_candidate: number;
   work_auth_required: number;
+  applied_count: number;
+  oa_count: number;
+  behavior_interview_count: number;
+  technical_interview_count: number;
+  rejected_count: number;
+  offered_count: number;
 };

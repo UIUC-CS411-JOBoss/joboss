@@ -279,6 +279,57 @@ const Job = ({
                   </HStack>
                 </Stack>
               </HStack>
+              <HStack spacing={10}>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Applied
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.applied_count}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    OA
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.oa_count}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Behavior Interview
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.behavior_interview_count}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Technical Interview
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.technical_interview_count}</Tag>
+                  </HStack>
+                </Stack>
+
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Rejected
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.rejected_count}</Tag>
+                  </HStack>
+                </Stack>
+                <Stack spacing={4}>
+                  <Heading as="h4" size="md">
+                    Offered
+                  </Heading>
+                  <HStack spacing={4}>
+                    <Tag>{currentJob?.offered_count}</Tag>
+                  </HStack>
+                </Stack>
+              </HStack>
               <Heading as="h4" size="md">
                 Role description
               </Heading>
