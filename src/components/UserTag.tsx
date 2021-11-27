@@ -11,7 +11,7 @@ import {
   useDisclosure,
   CheckboxGroup,
   Stack,
-  HStack,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { useRef, useEffect, useState } from "react";
 
@@ -94,7 +94,7 @@ const UserTag = () => {
                 setSelectedTagList(tagNameList);
               }}
             >
-              <HStack>
+              <SimpleGrid columns={2} spacing={10}>
                 {tagList?.map((tag) => {
                   return (
                     <Checkbox value={tag.tag} key={tag.id} colorScheme="green">
@@ -102,7 +102,7 @@ const UserTag = () => {
                     </Checkbox>
                   );
                 })}
-              </HStack>
+              </SimpleGrid>
             </CheckboxGroup>
           </DrawerBody>
           <DrawerFooter>
