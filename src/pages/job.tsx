@@ -98,6 +98,7 @@ const Job = ({
     fetchJobList();
   }, [currPage, searchCompany]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const drawerHeaderBody = () => {
     if (isCreate && currentApply) {
       return (
@@ -265,6 +266,20 @@ const Job = ({
                   </HStack>
                 </Stack>
               </HStack>
+              <Heading as="h4" size="md">
+                Tags
+              </Heading>
+              <HStack spacing={1}>
+                {currentJob?.tag_list.split(";").map((t) =>
+                  t ? (
+                    <Tag key={t} variant="solid" colorScheme="teal">
+                      {t}
+                    </Tag>
+                  ) : (
+                    <div />
+                  )
+                )}
+              </HStack>
               <HStack spacing={10}>
                 <Stack spacing={4}>
                   <Heading as="h4" size="md">
@@ -327,7 +342,6 @@ const Job = ({
     }
     return null;
   };
-
   return (
     <>
       <Box mb={8} w="full">
@@ -346,6 +360,7 @@ const Job = ({
             <Tr>
               <Th>Role Name</Th>
               <Th>Company</Th>
+              <Th>Tag</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -354,6 +369,19 @@ const Job = ({
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
+                <Td>
+                  <HStack spacing={4}>
+                    {job.tag_list.split(";").map((t) =>
+                      t ? (
+                        <Tag key={t} variant="solid" colorScheme="teal">
+                          {t}
+                        </Tag>
+                      ) : (
+                        <div />
+                      )
+                    )}
+                  </HStack>
+                </Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
                     <Button ref={btnRef} onClick={() => goDetail(job)}>
