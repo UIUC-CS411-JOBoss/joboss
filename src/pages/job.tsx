@@ -29,6 +29,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRef, useState, useEffect } from "react";
 
 import { BASE_URL } from "../../config";
+import UserTag from "../components/UserTag";
 import type { ApplyItem } from "types/apply";
 import type { JobItem } from "types/job";
 import { getDateString } from "utils/date";
@@ -331,6 +332,7 @@ const Job = ({
     <>
       <Box mb={8} w="full">
         <Stack>
+          <UserTag />
           <FormControl id="company" hidden={isCreate}>
             <FormLabel>Search Company</FormLabel>
             <Input
