@@ -23,20 +23,23 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
       ret.push(
         `MATCH(j.text_description) AGAINST("${JobDescription}" IN NATURAL LANGUAGE MODE)`
       );
-    return ret.length > 0 ? `WHERE ${ret.join(" AND ")}` : "";
+    return `WHERE ${ret.join(" AND ")}`;
   };
 
   try {
     const pageSize = 20;
     const { company, jobType, location, role, JobDescription, page } =
       req.query;
-    const queryCondition = generateQueryCondition(
-      company.toString(),
-      jobType.toString(),
-      location.toString(),
-      role.toString(),
-      JobDescription.toString()
-    );
+    let queryCondition = "";
+    if (company || jobType || location || role || JobDescription) {
+      queryCondition = generateQueryCondition(
+        company.toString(),
+        jobType.toString(),
+        location.toString(),
+        role.toString(),
+        JobDescription.toString()
+      );
+    }
 
     const query = `
       SELECT j.id, j.title, c.name AS company, j.job_type_name,

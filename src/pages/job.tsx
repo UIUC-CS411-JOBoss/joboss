@@ -192,7 +192,7 @@ const Job = ({
             return states.indexOf(item) === pos;
           });
           return uniqueStates.map((state: string) => {
-            return <Tag>{state}</Tag>;
+            return <Tag key={state}>{state}</Tag>;
           });
         }
         return <Tag>N/A</Tag>;
@@ -359,7 +359,7 @@ const Job = ({
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>
-                    <FormControl id="roleName">
+                    <FormControl id="jobType">
                       <FormLabel>Search Job Type</FormLabel>
                       <Select
                         onChange={(e) => setSearchJobType(e.target.value)}
@@ -384,7 +384,7 @@ const Job = ({
                   <PopoverArrow />
                   <PopoverCloseButton />
                   <PopoverBody>
-                    <FormControl id="roleName">
+                    <FormControl id="location">
                       <FormLabel>Search Location</FormLabel>
                       <Select
                         onChange={(e) => setSearchLocation(e.target.value)}
@@ -392,7 +392,11 @@ const Job = ({
                         placeholder="Select State"
                       >
                         {States.map((state) => {
-                          return <option value={state}>{state}</option>;
+                          return (
+                            <option key={state} value={state}>
+                              {state}
+                            </option>
+                          );
                         })}
                       </Select>
                     </FormControl>
