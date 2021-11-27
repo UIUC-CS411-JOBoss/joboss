@@ -15,7 +15,7 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { BASE_URL } from "../../config";
 import type { UserItem } from "types/user";

@@ -22,7 +22,7 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
 import type { ApplyItem } from "types/apply";
