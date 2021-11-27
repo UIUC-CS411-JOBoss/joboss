@@ -78,7 +78,7 @@ const Apply = ({
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>Title</Th>
+              <Th>Role Name</Th>
               <Th>Company</Th>
               <Th>Status</Th>
               <Th>Date</Th>
@@ -112,13 +112,7 @@ const Apply = ({
           </Button>
         </Stack>
       </Box>
-      <Drawer
-        isOpen={isOpen}
-        placement="right"
-        onClose={onClose}
-        finalFocusRef={btnRef}
-        size="sm"
-      >
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose} size="sm">
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />
@@ -213,6 +207,7 @@ const Apply = ({
                 onClick={async () => {
                   await postData("update");
                   await fetchApplyList();
+                  onClose();
                 }}
               >
                 Update

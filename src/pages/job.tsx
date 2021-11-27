@@ -342,7 +342,7 @@ const Job = ({
         <Table variant="simple">
           <Thead>
             <Tr>
-              <Th>Title</Th>
+              <Th>Role Name</Th>
               <Th>Company</Th>
               <Th>Actions</Th>
             </Tr>
@@ -383,7 +383,6 @@ const Job = ({
         isOpen={isOpen}
         placement="right"
         onClose={onClose}
-        finalFocusRef={btnRef}
         size={isDetail ? "full" : "sm"}
       >
         <DrawerOverlay />
