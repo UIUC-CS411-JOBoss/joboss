@@ -20,4 +20,5 @@ export type JobItem = {
   technical_interview_count: number;
   rejected_count: number;
   offered_count: number;
+  tag_list: string;
 };
