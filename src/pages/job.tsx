@@ -26,9 +26,10 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useContext } from "react";
 
 import { BASE_URL } from "../../config";
+import UserContext from "context/user";
 import type { ApplyItem } from "types/apply";
 import type { JobItem } from "types/job";
 import { getDateString } from "utils/date";
@@ -36,6 +37,7 @@ import { getDateString } from "utils/date";
 const Job = ({
   data,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+  const { userId } = useContext(UserContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
@@ -60,7 +62,8 @@ const Job = ({
     setAction("create");
     setCurrentApply({
       jobId,
-      userId: 1,
+      // eslint-disable-next-line object-shorthand
+      userId: userId,
       title: "",
       company: "",
       date: getDateString(),

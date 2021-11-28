@@ -1,9 +1,13 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Text, Button } from "@chakra-ui/react";
 import Link from "next/link";
+import { useContext } from "react";
+
+import UserContext from "context/user";
 
 import ThemeToggle from "./ThemeToggle";
 
 const Header = () => {
+  const { userId, setUserId } = useContext(UserContext);
   return (
     <Flex as="header" width="full" align="center">
       <Box p={2}>
@@ -25,6 +29,19 @@ const Header = () => {
           Metabase
         </Link>
       </Box>
+      {userId ? (
+        <Box marginLeft="auto">
+          <Link href="/" passHref>
+            <Button onClick={() => setUserId(null)}>LogOut</Button>
+          </Link>
+        </Box>
+      ) : (
+        <Box marginLeft="auto">
+          <Link href="/login/" passHref>
+            <Button>Login</Button>
+          </Link>
+        </Box>
+      )}
       <Box marginLeft="auto">
         <ThemeToggle />
       </Box>

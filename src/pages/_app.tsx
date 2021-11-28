@@ -6,9 +6,11 @@ import { DefaultSeo } from "next-seo";
 import { AppProps } from "next/app";
 import Head from "next/head";
 import "@fontsource/lexend/latin.css";
+import { useState } from "react";
 
 import defaultSEOConfig from "../../next-seo.config";
 import Layout from "components/layout";
+import UserContext from "context/user";
 import createEmotionCache from "styles/createEmotionCache";
 import customTheme from "styles/customTheme";
 import "styles/globals.css";
@@ -24,6 +26,7 @@ const MyApp = ({
   pageProps,
   emotionCache = clientSideEmotionCache,
 }: MyAppProps) => {
+  const [uid, setUid] = useState(null);
   return (
     <CacheProvider value={emotionCache}>
       <ChakraProvider theme={customTheme}>
@@ -34,9 +37,14 @@ const MyApp = ({
           />
         </Head>
         <DefaultSeo {...defaultSEOConfig} />
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <UserContext.Provider
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          value={{ userId: uid, setUserId: (id: any) => setUid(id) }}
+        >
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </UserContext.Provider>
       </ChakraProvider>
     </CacheProvider>
   );
