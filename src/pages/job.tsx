@@ -34,6 +34,8 @@ import {
   PopoverBody,
   PopoverArrow,
   PopoverCloseButton,
+  Wrap,
+  WrapItem,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRef, useState, useEffect, useContext } from "react";
@@ -59,6 +61,7 @@ const Job = ({
   const [searchLocation, setSearchLocation] = useState("");
   const [searchRole, setSearchRole] = useState("");
   const [searchJD, setSearchJD] = useState("");
+  const [searchPreferedTag, setSearchPreferedTag] = useState("true");
   const [currPage, setCurrPage] = useState(0);
   const [action, setAction] = useState<"" | "create" | "search" | "detail">("");
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
@@ -111,6 +114,7 @@ const Job = ({
       location: searchLocation,
       role: searchRole,
       JobDescription: searchJD,
+      onlyPreferedTag: searchPreferedTag,
       page: `${currPage}`,
     };
 
@@ -129,6 +133,7 @@ const Job = ({
     searchLocation,
     searchRole,
     searchJD,
+    searchPreferedTag,
   ]);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -355,7 +360,9 @@ const Job = ({
           <Stack spacing={4} direction="row" align="center" py={4}>
             <Popover>
               <PopoverTrigger>
-                <Button>Job Type</Button>
+                <Button colorScheme={searchJobType === "" ? "gray" : "blue"}>
+                  Job Type
+                </Button>
               </PopoverTrigger>
               <Portal>
                 <PopoverContent>
@@ -380,7 +387,9 @@ const Job = ({
             </Popover>
             <Popover>
               <PopoverTrigger>
-                <Button>Location</Button>
+                <Button colorScheme={searchLocation === "" ? "gray" : "blue"}>
+                  Location
+                </Button>
               </PopoverTrigger>
               <Portal>
                 <PopoverContent>
@@ -409,7 +418,9 @@ const Job = ({
             </Popover>
             <Popover>
               <PopoverTrigger>
-                <Button>Role Name</Button>
+                <Button colorScheme={searchRole === "" ? "gray" : "blue"}>
+                  Role Name
+                </Button>
               </PopoverTrigger>
               <Portal>
                 <PopoverContent>
@@ -434,7 +445,9 @@ const Job = ({
             </Popover>
             <Popover>
               <PopoverTrigger>
-                <Button>Job Description</Button>
+                <Button colorScheme={searchJD === "" ? "gray" : "blue"}>
+                  Job Description
+                </Button>
               </PopoverTrigger>
               <Portal>
                 <PopoverContent>
@@ -457,6 +470,14 @@ const Job = ({
                 </PopoverContent>
               </Portal>
             </Popover>
+            <Button
+              colorScheme={searchPreferedTag === "" ? "gray" : "blue"}
+              onClick={() => {
+                setSearchPreferedTag(searchPreferedTag === "" ? "true" : "");
+              }}
+            >
+              Recommend
+            </Button>
             <Button
               colorScheme="red"
               variant="outline"
@@ -486,18 +507,18 @@ const Job = ({
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
-                <Td>
-                  <HStack spacing={4}>
+                <Td w="300px">
+                  <Wrap spacing={4} w="300px">
                     {job.tag_list.split(";").map((t) =>
                       t ? (
-                        <Tag key={t} variant="solid" colorScheme="teal">
-                          {t}
-                        </Tag>
-                      ) : (
-                        <div />
-                      )
+                        <WrapItem>
+                          <Tag key={t} variant="solid" colorScheme="teal">
+                            {t}
+                          </Tag>
+                        </WrapItem>
+                      ) : null
                     )}
-                  </HStack>
+                  </Wrap>
                 </Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">

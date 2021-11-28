@@ -5,13 +5,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import excuteQuery from "../db";
 import type { JobItem } from "types/job";
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
   const generateQueryCondition = (
     company: string,
     jobType: string,
     location: string,
     role: string,
-    JobDescription: string
+    JobDescription: string,
+    onlyPreferedTag: string
   ) => {
     const ret = [];
     if (company) ret.push(`c.name LIKE "${company}%"`);
@@ -23,21 +25,40 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
       ret.push(
         `MATCH(j.text_description) AGAINST("${JobDescription}" IN NATURAL LANGUAGE MODE)`
       );
+    if (onlyPreferedTag)
+      ret.push(
+        `j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`
+      );
     return `WHERE ${ret.join(" AND ")}`;
   };
 
   try {
     const pageSize = 20;
-    const { company, jobType, location, role, JobDescription, page } =
-      req.query;
+    const {
+      company,
+      jobType,
+      location,
+      role,
+      JobDescription,
+      onlyPreferedTag,
+      page,
+    } = req.query;
     let queryCondition = "";
-    if (company || jobType || location || role || JobDescription) {
+    if (
+      company ||
+      jobType ||
+      location ||
+      role ||
+      JobDescription ||
+      onlyPreferedTag
+    ) {
       queryCondition = generateQueryCondition(
         company.toString(),
         jobType.toString(),
         location.toString(),
         role.toString(),
-        JobDescription.toString()
+        JobDescription.toString(),
+        onlyPreferedTag.toString()
       );
     }
 
