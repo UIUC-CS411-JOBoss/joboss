@@ -1,3 +1,4 @@
+import { SearchIcon } from "@chakra-ui/icons";
 import {
   Box,
   Table,
@@ -13,6 +14,8 @@ import {
   FormControl,
   FormLabel,
   Input,
+  InputGroup,
+  InputLeftElement,
   Drawer,
   DrawerBody,
   DrawerFooter,
@@ -24,11 +27,20 @@ import {
   Select,
   Heading,
   Text,
+  Portal,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverBody,
+  PopoverArrow,
+  PopoverCloseButton,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRef, useState, useEffect, useContext } from "react";
 
 import { BASE_URL } from "../../config";
+import UserTag from "../components/UserTag";
+import { States } from "../utils/statesInUS";
 import UserContext from "context/user";
 import type { ApplyItem } from "types/apply";
 import type { JobItem } from "types/job";
@@ -43,6 +55,10 @@ const Job = ({
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
   const [currentJob, setCurrentJob] = useState<JobItem | undefined>(undefined);
   const [searchCompany, setSearchCompany] = useState("");
+  const [searchJobType, setSearchJobType] = useState("");
+  const [searchLocation, setSearchLocation] = useState("");
+  const [searchRole, setSearchRole] = useState("");
+  const [searchJD, setSearchJD] = useState("");
   const [currPage, setCurrPage] = useState(0);
   const [action, setAction] = useState<"" | "create" | "search" | "detail">("");
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
@@ -89,17 +105,33 @@ const Job = ({
   };
 
   useEffect(() => {
+    const params = {
+      company: searchCompany,
+      jobType: searchJobType,
+      location: searchLocation,
+      role: searchRole,
+      JobDescription: searchJD,
+      page: `${currPage}`,
+    };
+
+    const searchParams = new URLSearchParams(params);
     const fetchJobList = async () => {
-      const url = searchCompany
-        ? `${BASE_URL}/api/job/list?company=${searchCompany}&page=${currPage}`
-        : `${BASE_URL}/api/job/list?page=${currPage}`;
+      const url = `${BASE_URL}/api/job/list?${searchParams}`;
       const res = await fetch(url);
       const jobs = (await res.json()).data;
       setJobList(jobs);
     };
     fetchJobList();
-  }, [currPage, searchCompany]);
+  }, [
+    currPage,
+    searchCompany,
+    searchJobType,
+    searchLocation,
+    searchRole,
+    searchJD,
+  ]);
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const drawerHeaderBody = () => {
     if (isCreate && currentApply) {
       return (
@@ -164,14 +196,38 @@ const Job = ({
             return states.indexOf(item) === pos;
           });
           return uniqueStates.map((state: string) => {
-            return <Tag>{state}</Tag>;
+            return <Tag key={state}>{state}</Tag>;
           });
         }
         return <Tag>N/A</Tag>;
       };
       return (
         <>
-          <DrawerHeader>Job Detail - {currentJob?.id}</DrawerHeader>
+          <DrawerHeader>
+            Job Detail - {currentJob?.id}{" "}
+            <Table variant="simple" size="sm">
+              <Thead>
+                <Tr>
+                  <Th isNumeric>Applied</Th>
+                  <Th isNumeric>OA</Th>
+                  <Th isNumeric>Behavior Interview</Th>
+                  <Th isNumeric>Technical Interview</Th>
+                  <Th isNumeric>Rejected</Th>
+                  <Th isNumeric>Offered</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                <Tr>
+                  <Td isNumeric>{currentJob?.applied_count}</Td>
+                  <Td isNumeric>{currentJob?.oa_count}</Td>
+                  <Td isNumeric>{currentJob?.behavior_interview_count}</Td>
+                  <Td isNumeric>{currentJob?.technical_interview_count}</Td>
+                  <Td isNumeric>{currentJob?.rejected_count}</Td>
+                  <Td isNumeric>{currentJob?.offered_count}</Td>
+                </Tr>
+              </Tbody>
+            </Table>
+          </DrawerHeader>
           <DrawerBody>
             <Stack spacing={5}>
               <Heading as="h3" size="lg">
@@ -267,57 +323,7 @@ const Job = ({
                   </HStack>
                 </Stack>
               </HStack>
-              <HStack spacing={10}>
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    Applied
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.applied_count}</Tag>
-                  </HStack>
-                </Stack>
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    OA
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.oa_count}</Tag>
-                  </HStack>
-                </Stack>
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    Behavior Interview
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.behavior_interview_count}</Tag>
-                  </HStack>
-                </Stack>
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    Technical Interview
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.technical_interview_count}</Tag>
-                  </HStack>
-                </Stack>
 
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    Rejected
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.rejected_count}</Tag>
-                  </HStack>
-                </Stack>
-                <Stack spacing={4}>
-                  <Heading as="h4" size="md">
-                    Offered
-                  </Heading>
-                  <HStack spacing={4}>
-                    <Tag>{currentJob?.offered_count}</Tag>
-                  </HStack>
-                </Stack>
-              </HStack>
               <Heading as="h4" size="md">
                 Role description
               </Heading>
@@ -329,24 +335,149 @@ const Job = ({
     }
     return null;
   };
-
   return (
     <>
       <Box mb={8} w="full">
-        <Stack>
+        <Stack spacing={3}>
+          <UserTag />
           <FormControl id="company" hidden={isCreate}>
             <FormLabel>Search Company</FormLabel>
-            <Input
-              value={searchCompany}
-              onChange={(e) => setSearchCompany(e.target.value)}
-            />
+            <InputGroup>
+              <InputLeftElement pointerEvents="none">
+                <SearchIcon color="gray.300" />
+              </InputLeftElement>
+              <Input
+                value={searchCompany}
+                onChange={(e) => setSearchCompany(e.target.value)}
+              />
+            </InputGroup>
           </FormControl>
+          <Stack spacing={4} direction="row" align="center" py={4}>
+            <Popover>
+              <PopoverTrigger>
+                <Button>Job Type</Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <FormControl id="jobType">
+                      <FormLabel>Search Job Type</FormLabel>
+                      <Select
+                        onChange={(e) => setSearchJobType(e.target.value)}
+                        value={searchJobType}
+                        placeholder="Select Option"
+                      >
+                        <option value="Job">Full-Time</option>
+                        <option value="Internship">Internship</option>
+                        <option value="All">All</option>
+                      </Select>
+                    </FormControl>
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
+            <Popover>
+              <PopoverTrigger>
+                <Button>Location</Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <FormControl id="location">
+                      <FormLabel>Search Location</FormLabel>
+                      <Select
+                        onChange={(e) => setSearchLocation(e.target.value)}
+                        value={searchLocation}
+                        placeholder="Select State"
+                      >
+                        {States.map((state) => {
+                          return (
+                            <option key={state} value={state}>
+                              {state}
+                            </option>
+                          );
+                        })}
+                      </Select>
+                    </FormControl>
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
+            <Popover>
+              <PopoverTrigger>
+                <Button>Role Name</Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <FormControl id="roleName">
+                      <FormLabel>Search Role Name</FormLabel>
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          value={searchRole}
+                          onChange={(e) => setSearchRole(e.target.value)}
+                        />
+                      </InputGroup>
+                    </FormControl>
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
+            <Popover>
+              <PopoverTrigger>
+                <Button>Job Description</Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <FormControl id="jobDescription">
+                      <FormLabel>Search Job Description</FormLabel>
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          value={searchJD}
+                          onChange={(e) => setSearchJD(e.target.value)}
+                        />
+                      </InputGroup>
+                    </FormControl>
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
+            <Button
+              colorScheme="red"
+              variant="outline"
+              onClick={() => {
+                setSearchCompany("");
+                setSearchJobType("");
+                setSearchLocation("");
+                setSearchRole("");
+                setSearchJD("");
+              }}
+            >
+              Clear
+            </Button>
+          </Stack>
         </Stack>
         <Table variant="simple">
           <Thead>
             <Tr>
               <Th>Role Name</Th>
               <Th>Company</Th>
+              <Th>Tag</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -355,6 +486,19 @@ const Job = ({
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
+                <Td>
+                  <HStack spacing={4}>
+                    {job.tag_list.split(";").map((t) =>
+                      t ? (
+                        <Tag key={t} variant="solid" colorScheme="teal">
+                          {t}
+                        </Tag>
+                      ) : (
+                        <div />
+                      )
+                    )}
+                  </HStack>
+                </Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
                     <Button ref={btnRef} onClick={() => goDetail(job)}>

@@ -5,6 +5,7 @@ export type JobItem = {
   location_countries: string;
   location_states: string;
   location_cities: string;
+  job_type_name: string;
   text_description: string;
   apply_start: string;
   expiration_date: string;
@@ -19,4 +20,5 @@ export type JobItem = {
   technical_interview_count: number;
   rejected_count: number;
   offered_count: number;
+  tag_list: string;
 };
