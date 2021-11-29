@@ -29,20 +29,18 @@ const Header = () => {
           Metabase
         </Link>
       </Box>
-      {userId ? (
-        <Box marginLeft="auto">
-          <Link href="/" passHref>
-            <Button onClick={() => setUserId(null)}>LogOut</Button>
-          </Link>
-        </Box>
-      ) : (
-        <Box marginLeft="auto">
-          <Link href="/login/" passHref>
-            <Button>Login</Button>
-          </Link>
-        </Box>
-      )}
       <Box marginLeft="auto">
+        {userId ? (
+          <Link href="/" passHref>
+            <Button mr={4} onClick={() => setUserId(null)}>
+              LogOut
+            </Button>
+          </Link>
+        ) : (
+          <Link href="/login/" passHref>
+            <Button mr={4}>Login</Button>
+          </Link>
+        )}
         <ThemeToggle />
       </Box>
     </Flex>

@@ -18,7 +18,7 @@ import { useRef, useEffect, useState } from "react";
 import { BASE_URL } from "../../config";
 import type { TagItem } from "types/tag";
 
-const UserTag = () => {
+const UserTag = ({ refetch }: any) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [tagList, setTagList] = useState<TagItem[] | undefined>(undefined);
@@ -113,9 +113,10 @@ const UserTag = () => {
               <Button
                 isDisabled={isSaved}
                 colorScheme="blue"
-                onClick={() => {
+                onClick={async () => {
                   setIsSaved(false);
-                  postData();
+                  await postData();
+                  refetch();
                   setIsSaved(true);
                 }}
               >

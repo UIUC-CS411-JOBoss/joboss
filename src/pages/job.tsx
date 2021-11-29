@@ -1,6 +1,7 @@
 import { SearchIcon } from "@chakra-ui/icons";
 import {
   Box,
+  Center,
   Table,
   Thead,
   Tbody,
@@ -25,6 +26,7 @@ import {
   DrawerCloseButton,
   useDisclosure,
   Select,
+  Spinner,
   Heading,
   Text,
   Portal,
@@ -38,7 +40,7 @@ import {
   WrapItem,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useRef, useState, useEffect, useContext } from "react";
+import { useRef, useState, useEffect, useContext, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
 import UserTag from "../components/UserTag";
@@ -67,6 +69,7 @@ const Job = ({
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
     undefined
   );
+  const [isLoading, setIsLoading] = useState(true);
   const [isCreated, setIsCreated] = useState(false);
   const isCreate = action === "create";
   const isDetail = action === "detail";
@@ -107,7 +110,7 @@ const Job = ({
     });
   };
 
-  useEffect(() => {
+  const fetchJobList = useCallback(async () => {
     const params = {
       company: searchCompany,
       jobType: searchJobType,
@@ -119,13 +122,10 @@ const Job = ({
     };
 
     const searchParams = new URLSearchParams(params);
-    const fetchJobList = async () => {
-      const url = `${BASE_URL}/api/job/list?${searchParams}`;
-      const res = await fetch(url);
-      const jobs = (await res.json()).data;
-      setJobList(jobs);
-    };
-    fetchJobList();
+    const url = `${BASE_URL}/api/job/list?${searchParams}`;
+    const res = await fetch(url);
+    const jobs = (await res.json()).data;
+    setJobList(jobs);
   }, [
     currPage,
     searchCompany,
@@ -135,6 +135,12 @@ const Job = ({
     searchJD,
     searchPreferedTag,
   ]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetchJobList();
+    setIsLoading(false);
+  }, [fetchJobList]);
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   const drawerHeaderBody = () => {
@@ -340,11 +346,24 @@ const Job = ({
     }
     return null;
   };
+  if (isLoading) {
+    return (
+      <Center h="50vh">
+        <Spinner
+          thickness="4px"
+          speed="0.65s"
+          emptyColor="gray.200"
+          color="blue.500"
+          size="xl"
+        />
+      </Center>
+    );
+  }
   return (
     <>
       <Box mb={8} w="full">
         <Stack spacing={3}>
-          <UserTag />
+          <UserTag refetch={fetchJobList} />
           <FormControl id="company" hidden={isCreate}>
             <FormLabel>Search Company</FormLabel>
             <InputGroup>
@@ -357,7 +376,15 @@ const Job = ({
               />
             </InputGroup>
           </FormControl>
-          <Stack spacing={4} direction="row" align="center" py={4}>
+          <Stack spacing={2} direction="row" align="center" py={4}>
+            <Button
+              colorScheme={searchPreferedTag === "" ? "gray" : "blue"}
+              onClick={() => {
+                setSearchPreferedTag(searchPreferedTag === "" ? "true" : "");
+              }}
+            >
+              Recommend
+            </Button>
             <Popover>
               <PopoverTrigger>
                 <Button colorScheme={searchJobType === "" ? "gray" : "blue"}>
@@ -471,14 +498,6 @@ const Job = ({
               </Portal>
             </Popover>
             <Button
-              colorScheme={searchPreferedTag === "" ? "gray" : "blue"}
-              onClick={() => {
-                setSearchPreferedTag(searchPreferedTag === "" ? "true" : "");
-              }}
-            >
-              Recommend
-            </Button>
-            <Button
               colorScheme="red"
               variant="outline"
               onClick={() => {
@@ -487,6 +506,7 @@ const Job = ({
                 setSearchLocation("");
                 setSearchRole("");
                 setSearchJD("");
+                setSearchPreferedTag("");
               }}
             >
               Clear
@@ -507,12 +527,17 @@ const Job = ({
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
-                <Td w="300px">
-                  <Wrap spacing={4} w="300px">
+                <Td w="200px">
+                  <Wrap spacing={2} w="200px">
                     {job.tag_list.split(";").map((t) =>
                       t ? (
                         <WrapItem>
-                          <Tag key={t} variant="solid" colorScheme="teal">
+                          <Tag
+                            size="sm"
+                            key={t}
+                            variant="solid"
+                            colorScheme="teal"
+                          >
                             {t}
                           </Tag>
                         </WrapItem>
@@ -522,10 +547,15 @@ const Job = ({
                 </Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
-                    <Button ref={btnRef} onClick={() => goDetail(job)}>
+                    <Button
+                      size="sm"
+                      ref={btnRef}
+                      onClick={() => goDetail(job)}
+                    >
                       Detail
                     </Button>
                     <Button
+                      size="sm"
                       ref={btnRef}
                       colorScheme="blue"
                       onClick={() => goCreate(job.id)}
@@ -584,7 +614,9 @@ const Job = ({
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${BASE_URL}/api/job/list?page=0`);
+  const res = await fetch(
+    `${BASE_URL}/api/job/list?page=0&onlyPreferedTag=true`
+  );
   const data = await res.json();
 
   if (data === null) {

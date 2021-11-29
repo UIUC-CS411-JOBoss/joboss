@@ -12,8 +12,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
     jobType: string,
     location: string,
     role: string,
-    JobDescription: string,
-    onlyPreferedTag: string
+    JobDescription: string
   ) => {
     const ret = [];
     if (company) ret.push(`c.name LIKE "${company}%"`);
@@ -24,10 +23,6 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
     if (JobDescription)
       ret.push(
         `MATCH(j.text_description) AGAINST("${JobDescription}" IN NATURAL LANGUAGE MODE)`
-      );
-    if (onlyPreferedTag)
-      ret.push(
-        `j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`
       );
     return `WHERE ${ret.join(" AND ")}`;
   };
@@ -46,22 +41,25 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
     let queryCondition = "";
     if (
       company ||
-      jobType ||
+      (jobType && jobType !== "All") ||
       location ||
       role ||
-      JobDescription ||
-      onlyPreferedTag
+      JobDescription
     ) {
       queryCondition = generateQueryCondition(
         company.toString(),
         jobType.toString(),
         location.toString(),
         role.toString(),
-        JobDescription.toString(),
-        onlyPreferedTag.toString()
+        JobDescription.toString()
       );
     }
-
+    if (queryCondition || onlyPreferedTag) {
+      if (!queryCondition)
+        queryCondition = `WHERE j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`;
+      else
+        queryCondition += ` AND j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`;
+    }
     const query = `
       SELECT j.id, j.title, c.name AS company, j.job_type_name,
         j.location_states, j.location_countries, j.location_cities, 

@@ -54,7 +54,7 @@ const Apply = ({
 
   useEffect(() => {
     fetchApplyList();
-  }, [currPage, fetchApplyList]);
+  }, [fetchApplyList]);
 
   const goUpdate = (applyData: ApplyItem) => {
     setAction("update");
@@ -91,7 +91,7 @@ const Apply = ({
                 <Td>{apply.title}</Td>
                 <Td>{apply.company}</Td>
                 <Td>{apply.status}</Td>
-                <Td>{apply.date.slice(0, 10)}</Td>
+                <Td w="140px">{apply.date.slice(0, 10)}</Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
                     <Button ref={btnRef} onClick={() => goUpdate(apply)}>
