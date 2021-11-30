@@ -18,6 +18,7 @@ import { useRef, useEffect, useState } from "react";
 import { BASE_URL } from "../../config";
 import type { TagItem } from "types/tag";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const UserTag = ({ refetch }: any) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
