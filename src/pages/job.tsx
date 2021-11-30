@@ -368,7 +368,9 @@ const Job = ({
     <>
       <Box mb={8} w="full">
         <Stack spacing={3}>
-          <UserTag refetch={fetchJobList} userId={userId} />
+          {userId !== null ? (
+            <UserTag refetch={fetchJobList} userId={userId} />
+          ) : null}
           <FormControl id="company" hidden={isCreate}>
             <FormLabel>Search Company</FormLabel>
             <InputGroup>
