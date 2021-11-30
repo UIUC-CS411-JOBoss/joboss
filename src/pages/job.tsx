@@ -368,7 +368,9 @@ const Job = ({
     <>
       <Box mb={8} w="full">
         <Stack spacing={3}>
-          <UserTag refetch={fetchJobList} />
+          {userId !== null ? (
+            <UserTag refetch={fetchJobList} userId={userId} />
+          ) : null}
           <FormControl id="company" hidden={isCreate}>
             <FormLabel>Search Company</FormLabel>
             <InputGroup>
@@ -559,14 +561,16 @@ const Job = ({
                     >
                       Detail
                     </Button>
-                    <Button
-                      size="sm"
-                      ref={btnRef}
-                      colorScheme="blue"
-                      onClick={() => goCreate(job.id)}
-                    >
-                      Create Status
-                    </Button>
+                    {userId !== null ? (
+                      <Button
+                        size="sm"
+                        ref={btnRef}
+                        colorScheme="blue"
+                        onClick={() => goCreate(job.id)}
+                      >
+                        Create Status
+                      </Button>
+                    ) : null}
                   </Stack>
                 </Td>
               </Tr>

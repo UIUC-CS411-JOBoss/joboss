@@ -10,9 +10,9 @@ const updateUserTag = async (req: NextApiRequest, res: NextApiResponse) => {
     return;
   }
 
-  const tagIdString = req.body as string;
-  const userId = 1;
-  const tagIdList = tagIdString.split(",").map((tagId) => {
+  const { tagIds } = req.body;
+  const { userId } = req.body;
+  const tagIdList = (tagIds as string).split(",").map((tagId) => {
     return `(${userId}, ${tagId})`;
   });
 
@@ -34,7 +34,7 @@ const updateUserTag = async (req: NextApiRequest, res: NextApiResponse) => {
 
     res.statusCode = 200;
     res.json({
-      msg: `get ${tagIdString}`,
+      msg: `get ${tagIds}`,
     });
   } catch (error) {
     res.statusCode = 500;
