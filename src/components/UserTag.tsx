@@ -13,12 +13,13 @@ import {
   Stack,
   SimpleGrid,
 } from "@chakra-ui/react";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
 import type { TagItem } from "types/tag";
 
-const UserTag = ({ refetch }: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const UserTag = ({ refetch, userId }: any) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [tagList, setTagList] = useState<TagItem[] | undefined>(undefined);
@@ -32,8 +33,8 @@ const UserTag = ({ refetch }: any) => {
     setTagList(tags);
   };
 
-  const fetchUserTag = async () => {
-    const url = `${BASE_URL}/api/tag/user/list`;
+  const fetchUserTag = useCallback(async () => {
+    const url = `${BASE_URL}/api/tag/user/list?uid=${userId}`;
     const res = await fetch(url);
     const userTags = (await res.json()).data;
     setSelectedTagList(
@@ -41,12 +42,12 @@ const UserTag = ({ refetch }: any) => {
         return userTagItem.tag;
       })
     );
-  };
+  }, [userId]);
 
   useEffect(() => {
     fetchTagList();
     fetchUserTag();
-  }, []);
+  }, [fetchUserTag]);
 
   const postData = async () => {
     if (tagList) {
@@ -61,7 +62,10 @@ const UserTag = ({ refetch }: any) => {
         .join(",");
       return fetch(`${BASE_URL}/api/tag/user/update`, {
         method: "POST",
-        body: selectedTagIds,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tagIds: selectedTagIds, userId }),
       });
     }
     return null;

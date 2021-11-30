@@ -10,11 +10,13 @@ const applyList = async (req: NextApiRequest, res: NextApiResponse) => {
     const query = `
       SELECT tag_id, tag
       FROM USER_PREFERRED_TAG JOIN TAG ON USER_PREFERRED_TAG.tag_id = TAG.id
-      WHERE user_id = 1
+      WHERE user_id = ?
       `;
+    const userId = `${req.query.uid}`;
+    const value = [userId !== "" ? userId : 1];
     const result = await excuteQuery({
       query,
-      values: [],
+      values: value,
     });
     const tagItemList: TagItem[] = JSON.parse(JSON.stringify(result));
 
