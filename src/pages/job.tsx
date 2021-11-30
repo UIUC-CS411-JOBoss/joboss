@@ -43,6 +43,7 @@ import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRef, useState, useEffect, useContext, useCallback } from "react";
 
 import { BASE_URL } from "../../config";
+import RecommandViev from "../components/Recommand";
 import UserTag from "../components/UserTag";
 import { States } from "../utils/statesInUS";
 import UserContext from "context/user";
@@ -339,6 +340,10 @@ const Job = ({
                 Role description
               </Heading>
               <Text fontSize="md">{currentJob?.text_description} </Text>
+              <Heading as="h4" size="md">
+                Related Jobs
+              </Heading>
+              <RecommandViev job_id={undefined} user_id={undefined} />
             </Stack>
           </DrawerBody>
         </>
