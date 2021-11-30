@@ -8,7 +8,7 @@ import type { JobItem } from "types/job";
 const jobRecommand = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const query = `
-      SELECT * FROM JOB LIMIT 10
+      SELECT JOB.id as job_id, COMPANY.name as company,JOB.title as job_title FROM JOB, COMPANY WHERE JOB.company_id = COMPANY.id LIMIT 10
       `;
     const result = await excuteQuery({
       query,
