@@ -561,14 +561,16 @@ const Job = ({
                     >
                       Detail
                     </Button>
-                    <Button
-                      size="sm"
-                      ref={btnRef}
-                      colorScheme="blue"
-                      onClick={() => goCreate(job.id)}
-                    >
-                      Create Status
-                    </Button>
+                    {userId !== null ? (
+                      <Button
+                        size="sm"
+                        ref={btnRef}
+                        colorScheme="blue"
+                        onClick={() => goCreate(job.id)}
+                      >
+                        Create Status
+                      </Button>
+                    ) : null}
                   </Stack>
                 </Td>
               </Tr>
