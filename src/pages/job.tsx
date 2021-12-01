@@ -554,23 +554,18 @@ const Job = ({
                 </Td>
                 <Td>
                   <Stack spacing={4} direction="row" align="center">
-                    <Button
-                      size="sm"
-                      ref={btnRef}
-                      onClick={() => goDetail(job)}
-                    >
+                    <Button ref={btnRef} onClick={() => goDetail(job)}>
                       Detail
                     </Button>
-                    {userId !== null ? (
-                      <Button
-                        size="sm"
-                        ref={btnRef}
-                        colorScheme="blue"
-                        onClick={() => goCreate(job.id)}
-                      >
-                        Create Status
-                      </Button>
-                    ) : null}
+                    <Button
+                      hidden={!userId}
+                      size="sm"
+                      ref={btnRef}
+                      colorScheme="blue"
+                      onClick={() => goCreate(job.id)}
+                    >
+                      Create Status
+                    </Button>
                   </Stack>
                 </Td>
               </Tr>
@@ -589,7 +584,10 @@ const Job = ({
       <Drawer
         isOpen={isOpen}
         placement="right"
-        onClose={onClose}
+        onClose={() => {
+          setIsCreated(false);
+          onClose();
+        }}
         size={isDetail ? "full" : "sm"}
       >
         <DrawerOverlay />
@@ -597,10 +595,18 @@ const Job = ({
           <DrawerCloseButton />
           {drawerHeaderBody()}
           <DrawerFooter>
-            <Button variant="outline" mr={3} onClick={onClose}>
+            <Button
+              variant="outline"
+              mr={3}
+              onClick={() => {
+                setIsCreated(false);
+                onClose();
+              }}
+            >
               Cancel
             </Button>
             <Button
+              hidden={!userId}
               colorScheme="blue"
               onClick={async () => {
                 if (isCreate) {
