@@ -18,9 +18,11 @@ const Header = () => {
       <Box p={2}>
         <Link href="/job/">Job</Link>
       </Box>
-      <Box p={2}>
-        <Link href="/apply/">My Apply</Link>
-      </Box>
+      {userId ? (
+        <Box p={2}>
+          <Link href="/apply/">My Apply</Link>
+        </Box>
+      ) : null}
       <Box p={2}>
         <Link href="/statistics/">Statistics</Link>
       </Box>
