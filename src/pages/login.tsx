@@ -6,6 +6,7 @@ import {
   FormControl,
   Input,
   Stack,
+  Spinner,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import router from "next/router";
@@ -17,6 +18,7 @@ import UserContext from "context/user";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setUserId } = useContext(UserContext);
 
   const postData = async () => {
@@ -57,14 +59,16 @@ const Login = () => {
             type="submit"
             onClick={async (e) => {
               e.preventDefault();
+              setLoading(true);
               const res = await postData();
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               const user: any = (await res.json()).data;
               setUserId(user.id);
               router.push("job");
+              setLoading(false);
             }}
           >
-            Login
+            {loading ? <Spinner /> : "Login"}
           </Button>
           <Box>
             <a>Dont have an account?</a> <Link href="/signup">Sign Up</Link>

@@ -267,6 +267,14 @@ const Job = ({
                   </Text>
                 </Stack>
               </HStack>
+              <Heading as="h4" size="md">
+                Tags
+              </Heading>
+              <HStack spacing={1}>
+                {currentJob?.tag_list
+                  .split(";")
+                  .map((t) => (t ? <Tag key={t}>{t}</Tag> : <div />))}
+              </HStack>
               <HStack spacing={10}>
                 <Stack spacing={4}>
                   <Heading as="h4" size="md">

@@ -6,6 +6,7 @@ import {
   FormControl,
   Input,
   Stack,
+  Spinner,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -18,6 +19,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const postData = async () => {
     return fetch(`${BASE_URL}/api/auth/signup`, {
@@ -64,15 +66,17 @@ const Signup = () => {
             width="full"
             type="submit"
             onClick={async (e) => {
+              setLoading(true);
               e.preventDefault();
               if (password !== confirmPassword) {
                 return;
               }
               await postData();
               router.push("login");
+              setLoading(false);
             }}
           >
-            Sign Up
+            {loading ? <Spinner /> : "Sign Up"}
           </Button>
         </Stack>
       </Box>
