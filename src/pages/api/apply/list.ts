@@ -8,18 +8,19 @@ import type { ApplyItem } from "types/apply";
 const applyList = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const pageSize = 20;
+    const { userId } = req.body;
     const { page } = req.query;
     const query = `
       SELECT s.id, s.user_id AS userId, s.job_id AS jobId, j.title, c.name AS company, s.status_date AS date, s.application_status AS status, s.create_at AS createAt, s.update_at AS updateAt
       FROM JOB_STATUS AS s JOIN JOB AS j ON s.job_id = j.id JOIN COMPANY AS c ON j.company_id = c.id
-      WHERE s.user_id = 1
+      WHERE s.user_id = ?
       ORDER BY date DESC
       LIMIT ?
       OFFSET ?;
       `;
     const result = await excuteQuery({
       query,
-      values: [pageSize, pageSize * Number(page)],
+      values: [userId, pageSize, pageSize * Number(page)],
     });
 
     const applyItemList: ApplyItem[] = JSON.parse(JSON.stringify(result));

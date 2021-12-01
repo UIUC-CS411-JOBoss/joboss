@@ -21,19 +21,18 @@ import {
   useDisclosure,
   Select,
 } from "@chakra-ui/react";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect, useCallback, useContext } from "react";
 
 import { BASE_URL } from "../../config";
+import UserContext from "context/user";
 import type { ApplyItem } from "types/apply";
 
-const Apply = ({
-  data,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Apply = () => {
+  const { userId } = useContext(UserContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const btnRef = useRef(null);
   const [action, setAction] = useState<"" | "create" | "update">("");
-  const [applyList, setApplyList] = useState<ApplyItem[]>(data as ApplyItem[]);
+  const [applyList, setApplyList] = useState<ApplyItem[]>([]);
   const [currentApply, setCurrentApply] = useState<ApplyItem | undefined>(
     undefined
   );
@@ -47,14 +46,20 @@ const Apply = ({
   };
 
   const fetchApplyList = useCallback(async () => {
-    const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`);
+    const res = await fetch(`${BASE_URL}/api/apply/list?page=${currPage}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId }),
+    });
     const jobs = (await res.json()).data;
     setApplyList(jobs);
-  }, [currPage]);
+  }, [currPage, userId]);
 
   useEffect(() => {
     fetchApplyList();
-  }, [fetchApplyList]);
+  }, [fetchApplyList, userId]);
 
   const goUpdate = (applyData: ApplyItem) => {
     setAction("update");
@@ -218,22 +223,6 @@ const Apply = ({
       </Drawer>
     </>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async () => {
-  const res = await fetch(`${BASE_URL}/api/apply/list?page=0`);
-  const data = await res.json();
-
-  if (data === null) {
-    return {
-      notFound: true,
-    };
-  }
-  return {
-    props: {
-      data: data.data as ApplyItem,
-    },
-  };
 };
 
 export default Apply;
