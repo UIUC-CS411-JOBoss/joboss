@@ -1,5 +1,5 @@
 export type RecommendItem = {
   job_id: number;
-  company: string;
+  company_name: string;
   job_title: string;
 };

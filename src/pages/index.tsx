@@ -1,12 +1,15 @@
 import { Box, Heading, UnorderedList, ListItem, Text } from "@chakra-ui/react";
+import { useContext } from "react";
 
 import RecommandViev from "../components/Recommand";
+import UserContext from "context/user";
 
 const Home = () => {
+  const { userId } = useContext(UserContext);
   return (
     <Box mb={8} w="full">
       <Heading py={4}>Your Recommended Jobs</Heading>
-      <RecommandViev job_id={undefined} user_id={undefined} />
+      <RecommandViev job_id={0} user_id={userId} />
 
       <Heading py={4}>Disclaimer</Heading>
       <Text> This is the final project for UIUC CS411 FA21.</Text>

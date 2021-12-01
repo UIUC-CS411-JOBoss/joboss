@@ -343,7 +343,7 @@ const Job = ({
               <Heading as="h4" size="md">
                 Related Jobs
               </Heading>
-              <RecommandViev job_id={undefined} user_id={undefined} />
+              <RecommandViev job_id={currentJob?.id} user_id={0} />
             </Stack>
           </DrawerBody>
         </>

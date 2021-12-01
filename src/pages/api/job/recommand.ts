@@ -3,19 +3,20 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
 import excuteQuery from "../db";
-import type { JobItem } from "types/job";
+import type { RecommendItem } from "types/recommend";
 
 const jobRecommand = async (req: NextApiRequest, res: NextApiResponse) => {
+  const postData = req.body;
   try {
     const query = `
-      SELECT JOB.id as job_id, COMPANY.name as company,JOB.title as job_title FROM JOB, COMPANY WHERE JOB.company_id = COMPANY.id LIMIT 10
+      CALL recommend(${postData.job_id}, ${postData.user_id});
       `;
     const result = await excuteQuery({
       query,
       values: [],
     });
 
-    const jobItemList: JobItem[] = JSON.parse(JSON.stringify(result));
+    const jobItemList: RecommendItem[] = JSON.parse(JSON.stringify(result));
 
     res.statusCode = 200;
     res.json({

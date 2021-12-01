@@ -34,7 +34,7 @@ const RecommandView = ({ job_id, user_id }: RecommanddProps) => {
     (async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await (await getRecommand(user_id, job_id)).json();
-      setJobList(res.data as RecommendItem[]);
+      setJobList(res.data[0] as RecommendItem[]);
     })();
   }, [user_id, job_id]);
 
@@ -49,8 +49,8 @@ const RecommandView = ({ job_id, user_id }: RecommanddProps) => {
       </Thead>
       <Tbody>
         {jobList.map((job) => (
-          <Tr key={job.job_title}>
-            <Td>{job.company}</Td>
+          <Tr key={job.job_id}>
+            <Td>{job.company_name}</Td>
             <Td>{job.job_title}</Td>
             <Td>
               <Button>Detail</Button>
