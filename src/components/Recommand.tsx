@@ -2,7 +2,7 @@ import { Table, Thead, Tbody, Tr, Th, Td, Button } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 
 import { BASE_URL } from "../../config";
-import { JobItem } from "types/job";
+import { RecommendItem } from "types/recommend";
 
 const getRecommand = async (
   user_id: number | undefined,
@@ -26,13 +26,15 @@ type RecommanddProps = {
 };
 
 const RecommandView = ({ job_id, user_id }: RecommanddProps) => {
-  const [jobList, setJobList] = useState<JobItem[]>([] as JobItem[]);
+  const [jobList, setJobList] = useState<RecommendItem[]>(
+    [] as RecommendItem[]
+  );
 
   useEffect(() => {
     (async () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const res: any = await (await getRecommand(user_id, job_id)).json();
-      setJobList(res.data as JobItem[]);
+      setJobList(res.data as RecommendItem[]);
     })();
   }, [user_id, job_id]);
 
@@ -47,9 +49,9 @@ const RecommandView = ({ job_id, user_id }: RecommanddProps) => {
       </Thead>
       <Tbody>
         {jobList.map((job) => (
-          <Tr key={job.id}>
-            <Td>{job.title}</Td>
+          <Tr key={job.job_title}>
             <Td>{job.company}</Td>
+            <Td>{job.job_title}</Td>
             <Td>
               <Button>Detail</Button>
             </Td>
