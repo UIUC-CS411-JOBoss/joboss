@@ -38,6 +38,7 @@ import {
   PopoverCloseButton,
   Wrap,
   WrapItem,
+  Textarea,
 } from "@chakra-ui/react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRef, useState, useEffect, useContext, useCallback } from "react";
@@ -72,6 +73,8 @@ const Job = ({
   );
   const [isLoading, setIsLoading] = useState(true);
   const [isCreated, setIsCreated] = useState(false);
+  const [jobDesc, setJobDesc] = useState("");
+  const [isEdit, setIsEdit] = useState(false);
   const isCreate = action === "create";
   const isDetail = action === "detail";
 
@@ -110,6 +113,16 @@ const Job = ({
       body: JSON.stringify(currentApply),
     });
   };
+
+  const updateDesc = useCallback(async (id, desc) => {
+    return fetch(`${BASE_URL}/api/job/update`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ jobId: id, updatedText: desc }),
+    });
+  }, []);
 
   const fetchJobList = useCallback(async () => {
     const params = {
@@ -339,7 +352,38 @@ const Job = ({
               <Heading as="h4" size="md">
                 Role description
               </Heading>
-              <Text fontSize="md">{currentJob?.text_description} </Text>
+              {!isEdit ? (
+                <>
+                  <Text fontSize="md">{currentJob?.text_description} </Text>
+                  {userId === 42009 ? (
+                    <Button
+                      onClick={() => {
+                        setIsEdit(true);
+                        setJobDesc(currentJob?.text_description as string);
+                      }}
+                    >
+                      Edit
+                    </Button>
+                  ) : null}
+                </>
+              ) : (
+                <>
+                  <Textarea
+                    value={jobDesc}
+                    onChange={(e) => setJobDesc(e.target.value)}
+                  />
+                  <Button
+                    onClick={async () => {
+                      await updateDesc(currentJob?.id, jobDesc);
+                      await fetchJobList();
+                      setIsEdit(false);
+                      onClose();
+                    }}
+                  >
+                    Update
+                  </Button>
+                </>
+              )}
               <Heading as="h4" size="md">
                 Related Jobs
               </Heading>
@@ -600,6 +644,7 @@ const Job = ({
               mr={3}
               onClick={() => {
                 setIsCreated(false);
+                setIsEdit(false);
                 onClose();
               }}
             >
