@@ -620,6 +620,7 @@ const Job = ({
                 if (isCreate) {
                   setIsCreated(false);
                   await postData("create");
+                  fetchJobList();
                   setIsCreated(true);
                 }
                 if (isDetail && currentJob) {
