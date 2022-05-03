@@ -60,6 +60,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
       else
         queryCondition += ` AND j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`;
     }
+    queryCondition = ''
     const query = `
       SELECT j.id, j.title, c.name AS company, j.job_type_name,
         j.location_states, j.location_countries, j.location_cities, 
@@ -72,7 +73,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
         COUNT(CASE WHEN js.application_status = 'technical interview' THEN 1 ELSE null END) AS technical_interview_count,
         COUNT(CASE WHEN js.application_status = 'rejected' THEN 1 ELSE null END) AS rejected_count,
         COUNT(CASE WHEN js.application_status = 'offered' THEN 1 ELSE null END) AS offered_count
-      FROM JOB AS j JOIN JOB_TAG_LIST AS jtl ON j.id = jtl.job_id JOIN COMPANY AS c ON j.company_id = c.id JOIN JOB_STATUS AS js ON js.job_id = j.id
+      FROM JOB AS j LEFT JOIN JOB_TAG_LIST AS jtl ON j.id = jtl.job_id JOIN COMPANY AS c ON j.company_id = c.id JOIN JOB_STATUS AS js ON js.job_id = j.id
       ${queryCondition}
       GROUP BY j.id
       ORDER BY company 

@@ -9,7 +9,7 @@ const Home = () => {
   return (
     <Box mb={8} w="full">
       <Heading py={4}>Your Recommended Jobs</Heading>
-      <RecommandViev job_id={0} user_id={userId || 0} />
+      {false? <RecommandViev job_id={0} user_id={userId || 0} />:null}
 
       <Heading py={4}>Disclaimer</Heading>
       <Text> This is the final project for UIUC CS411 FA21.</Text>

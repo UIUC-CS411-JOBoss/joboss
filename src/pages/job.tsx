@@ -395,7 +395,7 @@ const Job = ({
               <Heading as="h4" size="md">
                 Related Jobs
               </Heading>
-              <RecommandViev job_id={currentJob?.id} user_id={0} />
+              {false? <RecommandViev job_id={0} user_id={userId || 0} />:null}
             </Stack>
           </DrawerBody>
         </>
@@ -582,7 +582,10 @@ const Job = ({
             </Tr>
           </Thead>
           <Tbody>
-            {jobList.map((job) => (
+            {jobList.map((job) => {
+              // TO-DO: tag_list update
+              job.tag_list = "tag";
+              return (
               <Tr key={job.id}>
                 <Td>{job.title}</Td>
                 <Td>{job.company}</Td>
@@ -621,7 +624,7 @@ const Job = ({
                   </Stack>
                 </Td>
               </Tr>
-            ))}
+            )})}
           </Tbody>
         </Table>
         <Stack spacing={4} direction="row" align="center" py={4}>
