@@ -60,6 +60,7 @@ const Job = ({
   const btnRef = useRef(null);
   const [jobList, setJobList] = useState<JobItem[]>(data as JobItem[]);
   const [currentJob, setCurrentJob] = useState<JobItem | undefined>(undefined);
+  const [searchkeywords, setSearchkeywords] = useState("");
   const [searchCompany, setSearchCompany] = useState("");
   const [searchJobType, setSearchJobType] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
@@ -126,6 +127,7 @@ const Job = ({
 
   const fetchJobList = useCallback(async () => {
     const params = {
+      querywords: searchkeywords,
       company: searchCompany,
       jobType: searchJobType,
       location: searchLocation,
@@ -142,6 +144,7 @@ const Job = ({
     setJobList(jobs);
   }, [
     currPage,
+    searchkeywords,
     searchCompany,
     searchJobType,
     searchLocation,
@@ -395,7 +398,7 @@ const Job = ({
               <Heading as="h4" size="md">
                 Related Jobs
               </Heading>
-              {false? <RecommandViev job_id={0} user_id={userId || 0} />:null}
+              <RecommandViev job_id={currentJob?.id} user_id={userId || 0} />
             </Stack>
           </DrawerBody>
         </>
@@ -423,27 +426,46 @@ const Job = ({
           {userId !== null ? (
             <UserTag refetch={fetchJobList} userId={userId} />
           ) : null}
-          <FormControl id="company" hidden={isCreate}>
-            <FormLabel>Search Company</FormLabel>
+          <FormControl id="query" hidden={isCreate}>
+            <FormLabel>Search Key Words</FormLabel>
             <InputGroup>
               <InputLeftElement pointerEvents="none">
                 <SearchIcon color="gray.300" />
               </InputLeftElement>
               <Input
-                value={searchCompany}
-                onChange={(e) => setSearchCompany(e.target.value)}
+                value={searchkeywords}
+                onChange={(e) => setSearchkeywords(e.target.value)}
               />
             </InputGroup>
           </FormControl>
           <Stack spacing={2} direction="row" align="center" py={4}>
-            <Button
-              colorScheme={searchPreferedTag === "" ? "gray" : "blue"}
-              onClick={() => {
-                setSearchPreferedTag(searchPreferedTag === "" ? "true" : "");
-              }}
-            >
-              Recommend
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button colorScheme={searchCompany === "" ? "gray" : "blue"}>
+                  Search Company
+                </Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent>
+                  <PopoverArrow />
+                  <PopoverCloseButton />
+                  <PopoverBody>
+                    <FormControl id="companyName">
+                      <FormLabel>Search Company Name</FormLabel>
+                      <InputGroup>
+                        <InputLeftElement pointerEvents="none">
+                          <SearchIcon color="gray.300" />
+                        </InputLeftElement>
+                        <Input
+                          value={searchCompany}
+                          onChange={(e) => setSearchCompany(e.target.value)}
+                        />
+                      </InputGroup>
+                    </FormControl>
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
             <Popover>
               <PopoverTrigger>
                 <Button colorScheme={searchJobType === "" ? "gray" : "blue"}>
@@ -560,6 +582,7 @@ const Job = ({
               colorScheme="red"
               variant="outline"
               onClick={() => {
+                setSearchkeywords("");
                 setSearchCompany("");
                 setSearchJobType("");
                 setSearchLocation("");
@@ -586,45 +609,46 @@ const Job = ({
               // TO-DO: tag_list update
               job.tag_list = "tag";
               return (
-              <Tr key={job.id}>
-                <Td>{job.title}</Td>
-                <Td>{job.company}</Td>
-                <Td w="200px">
-                  <Wrap spacing={2} w="200px">
-                    {job.tag_list.split(";").map((t) =>
-                      t ? (
-                        <WrapItem>
-                          <Tag
-                            size="sm"
-                            key={t}
-                            variant="solid"
-                            colorScheme="teal"
-                          >
-                            {t}
-                          </Tag>
-                        </WrapItem>
-                      ) : null
-                    )}
-                  </Wrap>
-                </Td>
-                <Td>
-                  <Stack spacing={4} direction="row" align="center">
-                    <Button ref={btnRef} onClick={() => goDetail(job)}>
-                      Detail
-                    </Button>
-                    <Button
-                      hidden={!userId}
-                      size="sm"
-                      ref={btnRef}
-                      colorScheme="blue"
-                      onClick={() => goCreate(job.id)}
-                    >
-                      Create Status
-                    </Button>
-                  </Stack>
-                </Td>
-              </Tr>
-            )})}
+                <Tr key={job.id}>
+                  <Td>{job.title}</Td>
+                  <Td>{job.company}</Td>
+                  <Td w="200px">
+                    <Wrap spacing={2} w="200px">
+                      {job.tag_list.split(";").map((t) =>
+                        t ? (
+                          <WrapItem>
+                            <Tag
+                              size="sm"
+                              key={t}
+                              variant="solid"
+                              colorScheme="teal"
+                            >
+                              {t}
+                            </Tag>
+                          </WrapItem>
+                        ) : null
+                      )}
+                    </Wrap>
+                  </Td>
+                  <Td>
+                    <Stack spacing={4} direction="row" align="center">
+                      <Button ref={btnRef} onClick={() => goDetail(job)}>
+                        Detail
+                      </Button>
+                      <Button
+                        hidden={!userId}
+                        size="sm"
+                        ref={btnRef}
+                        colorScheme="blue"
+                        onClick={() => goCreate(job.id)}
+                      >
+                        Create Status
+                      </Button>
+                    </Stack>
+                  </Td>
+                </Tr>
+              );
+            })}
           </Tbody>
         </Table>
         <Stack spacing={4} direction="row" align="center" py={4}>

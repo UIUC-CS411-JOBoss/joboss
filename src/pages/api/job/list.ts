@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
+import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import excuteQuery from "../db";
@@ -30,12 +31,13 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const pageSize = 20;
     const {
+      querywords,
       company,
       jobType,
       location,
       role,
       JobDescription,
-      onlyPreferedTag,
+      // onlyPreferedTag,
       page,
     } = req.query;
     let queryCondition = "";
@@ -54,13 +56,49 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
         JobDescription.toString()
       );
     }
+    /*
     if (queryCondition || onlyPreferedTag) {
       if (!queryCondition)
         queryCondition = `WHERE j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`;
       else
         queryCondition += ` AND j.id IN (SELECT DISTINCT jt.job_id FROM USER_PREFERRED_TAG as upt JOIN TAG as t ON upt.tag_id = t.id JOIN JOB_TAG as jt WHERE jt.tag_id = upt.tag_id)`;
     }
-    queryCondition = ''
+    */
+    if (querywords) {
+      try {
+        const { data } = await axios.get(
+          `http://${process.env.BACKEND_HOST}:8000/job/query/${querywords}`,
+          {
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+        const { queryJobs } = data;
+        const queryJobsClause = queryJobs.reduce(function (
+          cl,
+          a,
+          currIndex,
+          arr
+        ) {
+          return (
+            cl +
+            (currIndex === 0 ? "" : ",") +
+            a +
+            (currIndex === arr.length - 1 ? ")" : "")
+          );
+        },
+        "(");
+        if (!queryCondition)
+          queryCondition += `WHERE j.id IN ${queryJobsClause}`;
+        else queryCondition += ` AND j.id IN ${queryJobsClause}`;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          return error.message;
+        }
+        return "An unexpected error occurred";
+      }
+    }
     const query = `
       SELECT j.id, j.title, c.name AS company, j.job_type_name,
         j.location_states, j.location_countries, j.location_cities, 
@@ -73,7 +111,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
         COUNT(CASE WHEN js.application_status = 'technical interview' THEN 1 ELSE null END) AS technical_interview_count,
         COUNT(CASE WHEN js.application_status = 'rejected' THEN 1 ELSE null END) AS rejected_count,
         COUNT(CASE WHEN js.application_status = 'offered' THEN 1 ELSE null END) AS offered_count
-      FROM JOB AS j LEFT JOIN JOB_TAG_LIST AS jtl ON j.id = jtl.job_id JOIN COMPANY AS c ON j.company_id = c.id JOIN JOB_STATUS AS js ON js.job_id = j.id
+      FROM JOB AS j LEFT JOIN JOB_TAG_LIST AS jtl ON j.id = jtl.job_id JOIN COMPANY AS c ON j.company_id = c.id LEFT JOIN JOB_STATUS AS js ON js.job_id = j.id
       ${queryCondition}
       GROUP BY j.id
       ORDER BY company 

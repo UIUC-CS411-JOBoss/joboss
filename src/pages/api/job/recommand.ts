@@ -9,7 +9,12 @@ const jobRecommand = async (req: NextApiRequest, res: NextApiResponse) => {
   const postData = req.body;
   try {
     const query = `
-      CALL recommend(${postData.job_id}, ${postData.user_id});
+      SELECT rj.related_job_id as job_id, j.title as job_title, c.name as company_name 
+      FROM RELATED_JOB as rj JOIN JOB as j
+      ON rj.related_job_id = j.id
+      JOIN COMPANY as c 
+      ON j.company_id = c.id 
+      WHERE job_id = ${postData.job_id};
       `;
     const result = await excuteQuery({
       query,
