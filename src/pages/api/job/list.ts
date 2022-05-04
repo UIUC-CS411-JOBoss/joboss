@@ -1,11 +1,13 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 
 import axios from "axios";
+import dotenv from "dotenv";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import excuteQuery from "../db";
 import type { JobItem } from "types/job";
 
+dotenv.config();
 // eslint-disable-next-line sonarjs/cognitive-complexity
 const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
   const generateQueryCondition = (
@@ -74,8 +76,8 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
             },
           }
         );
-        const { queryJobs } = data;
-        const queryJobsClause = queryJobs.reduce(function (
+        const { query_jobs } = data;
+        const queryJobsClause = query_jobs.reduce(function (
           cl,
           a,
           currIndex,
