@@ -607,7 +607,8 @@ const Job = ({
           <Tbody>
             {jobList.map((job) => {
               // TO-DO: tag_list update
-              job.tag_list = "tag";
+              if (job.tag_list === null)
+                job.tag_list = "default";
               return (
                 <Tr key={job.id}>
                   <Td>{job.title}</Td>

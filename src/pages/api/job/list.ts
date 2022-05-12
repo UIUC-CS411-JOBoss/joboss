@@ -92,8 +92,8 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
         },
         "(");
         if (!queryCondition)
-          queryCondition += `WHERE j.id IN ${queryJobsClause}`;
-        else queryCondition += ` AND j.id IN ${queryJobsClause}`;
+          queryCondition += `WHERE j.id IN ${queryJobsClause} AND j.tag_list IS NOT NULL`;
+        else queryCondition += ` AND j.id IN ${queryJobsClause} AND j.tag_list IS NOT NULL`;
       } catch (error) {
         if (axios.isAxiosError(error)) {
           return error.message;
@@ -106,7 +106,7 @@ const jobList = async (req: NextApiRequest, res: NextApiResponse) => {
         j.location_states, j.location_countries, j.location_cities, 
         j.text_description, j.apply_start, j.expiration_date, 
         j.work_auth_required, j.remote, j.accepts_opt_cpt_candidates, 
-        j.willing_to_sponsor_candidate, j.salary_type_name, jtl.tag_list,
+        j.willing_to_sponsor_candidate, j.salary_type_name, j.tag_list,
         COUNT(CASE WHEN js.application_status = 'applied' THEN 1 ELSE null END) AS applied_count,
         COUNT(CASE WHEN js.application_status = 'OA' THEN 1 ELSE null END) AS oa_count,
         COUNT(CASE WHEN js.application_status = 'behavior interview' THEN 1 ELSE null END) AS behavior_interview_count,
