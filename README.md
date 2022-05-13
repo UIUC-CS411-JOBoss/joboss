@@ -36,10 +36,10 @@ Start developing right away!
 
 ## Getting Started
 
-You can either click `Use this template` button on this repository and clone the repo or directly from your terminal:
+You can install the dependencies by npm
 
 ```bash
-npx degit sozonome/joboss <YOUR_APP_NAME>
+npm install
 ```
 
 Then, run the development server:
